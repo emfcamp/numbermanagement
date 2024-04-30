@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<table id="phonebook" class="phonebook">
+    <tr>
+        <th>Number</th>
+        <th>Label</th>
+        <th>Type</th>
+      </tr>
+    {% for number in numbers %}
+    <tr>
+      <td>{{ number.value }}</td>
+      <td>{{ number.label }}</td>
+      <td>{{ number.typeofservice }}</td>
+    </tr>
+    {% endfor %}
+
+  </table> 
+
+{% endblock %}

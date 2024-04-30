@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<script src="{% static 'js/search.js' %}"></script>
+<input type="text" id="search" onkeyup="searchPhonebook('Numbers')" placeholder="Search numbers...">
+<br><br>
+
+
+<table id="Numbers" class="phonebook">
+    <tr>
+        <th>Number</th>
+        <th>Label</th>
+        <th>Type</th>
+        <th>User</th>
+        <th>Actions</th>
+      </tr>
+    {% for number in numbers %}
+    <tr>
+      <td>{{ number.value }}</td>
+      <td>{{ number.label }}</td>
+      <td>{{ number.typeofservice }}</td>
+      <td>{{ number.user }}</td>
+      <td>
+        <a href="number/edit/{{number.value}}"><i class="fa-solid fa-pen"></i>Edit</a> | </a>
+        <a href="number/delete/{{number.value}}"> <i class="fa-solid fa-trash"></i>Delete</a> </a>
+      </td>
+    </tr>
+    {% endfor %}
+
+  </table> 
+
+{% endblock %}

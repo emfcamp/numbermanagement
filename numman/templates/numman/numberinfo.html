@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{%block content_formatted%}
+	<div class="row">
+		<div class="col-12">
+			<h2>{{title}}</h2>
+			<p>{{description}}</p>
+		</div>
+	</div>
+
+
+
+	<div class="row">
+		<div class="col-12">
+      <div class="row">
+        <div class="col6 form-label" id="param_name ">{{number.typeofservice.param_name}}</div>
+        <div class="col6" id="param_vale">{{number.param}}</div>
+      </div>
+      <div class="row">
+        <div class="col-9" id="instructions"></div>
+        </div>
+        
+      </div>
+
+      {% if number.typeofservice_id == "SIP" %}
+      <div class="row">
+        <div class="col-6"  id="qr">
+          <img 
+          src="https://oem.zoiper.com/qr.php?provider_id=272ec020802dd4687f4c2a2c984acc67&u={{ number.value }}&h=&p={{number.param}}&o=&t=&a=&tr=" 
+          alt="QR code"
+          style="width: 300px; height: 270px; object-fit: cover; object-position: 100% 0;"
+          />
+        </div>
+        <div class="col-6">
+          <a href='https://play.google.com/store/apps/details?id=com.zoiper.android.zoiperbeta.app&hl=en&gl=US&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+            <img alt='Get it on Google Play' 
+                 src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png'
+                 style="width: 300px;  padding-top: 20px;"
+            />
+          </a>
+          <a href="https://itunes.apple.com/us/app/id787863350?mt=8">
+          <img src="/static/appstore.svg" style="width: 260px; padding-left: 20px; padding-top: 20px;">
+          </a>
+        </div>
+      </div>
+      {% endif %}
+      
+
+      {% if number.typeofservice_id == "Group" %}
+      <div class="row">
+        <div class="col6"  id="managegroup">
+          <a href="/group/{{number.value}}">
+            <i class="fa fa-list" aria-hidden="true"></i> Manage Group
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+
+
+		</div>
+	</div>
+  <script>
+    function updateInstructions(tos) {
+      fetch(`/static/${tos}.html`).then((resp) => {
+        if (!resp.ok) {
+        // make the promise be rejected if we didn't get a 2xx response
+          console.log('no instructions file for '+tos)
+        } else {
+        resp.text().then(data =>{
+            // Initialize the document parser
+            const parser = new DOMParser();
+            let doc = parser.parseFromString(data, 'text/html');
+            // Get the <body> element content
+            let body = doc.querySelector('body').innerHTML;
+            // Replace my empty element with the retrieved content
+            document.getElementById('instructions').innerHTML = body;
+        })
+        
+        }
+      }).catch(function(err) {
+        console.error(err)
+      });
+    }
+        
+        
+
+    updateInstructions('{{number.typeofservice_id}}')
+  </script>
+
+{% endblock content_formatted%}

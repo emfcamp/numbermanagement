@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<table id="Group" class="phonebook">
+    <tr>
+        <th>Number</th>
+        <th>Label</th>
+        <th>Ring Delay</th>
+        <th>Actions</th>
+      </tr>
+    {% for member in members %}
+    <tr>
+    <form>
+      <td>{{ member.member_id }}</td>
+      <td>{{ member.member__label }}</td>
+      <td>{{ member.delay }}</td>
+      <td><a href="/group/remove/{{group.value}}/{{member.member_id}}"> <i class="fa-solid fa-trash"></i> Remove</a></td>
+    </form>
+    </tr>
+    {% endfor %}
+    {% if members|length < 10 %}
+      <tr>
+      <form action="/group/{{group}}" id="addtogroup" method="post">
+        {%csrf_token%}
+        <td>{{ joinform.member }}</td>
+        <td></td>
+        <td>{{ joinform.delay }}</td>
+        <td><a href="#" onclick="document.getElementById('addtogroup').submit();"><i class="fa fa-plus" aria-hidden="true"></i>
+          Add</a></td>
+      </form>
+      </tr>
+    {% endif %} 
+  </table> 
+
+
+{% endblock %}

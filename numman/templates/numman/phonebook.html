@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content_formatted %}
+
+<div class="row">
+    <div class="col-12">
+        <h2>
+        {% if title %} 
+            {{title}}
+        {% else %}
+            No title set - could remove this warning but I suspect all pages would benefit from one.
+        {% endif %}
+        </h2>
+
+        {% if description %} 
+            <p>{{description}}</p>
+        {% endif %}
+    </div>
+</div>
+<div class="row">
+    <form id="searchform">
+        <div class="col-9">
+            <input type="text" id="search" 
+                class="wide"
+                oninput="searchPhonebook('phonebook')" 
+                placeholder="Search the phonebook...">
+        </div>
+        <div class="col-3">
+            <input type="reset" class="wide" value="Clear Search">
+        </div>
+        <div class="col-12">
+            <table id="phonebook" class="phonebook">
+                <tr>
+                    <th>Number</th>
+                    <th>Label</th>
+                    <th>Type</th>
+                </tr>
+                {% for number in numbers %}
+                <tr>
+                    <td>{{ number.value }}</td>
+                    <td>{{ number.label }}</td>
+                    <td>{{ number.typeofservice }}</td>
+                </tr>
+                {% endfor %}
+            </table> 
+        </div>
+    </form>
+</div>
+
+<script src="{% static 'js/search.js' %}"></script>
+
+{% endblock %}

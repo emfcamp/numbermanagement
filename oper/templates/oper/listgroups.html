@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<script src="{% static 'js/search.js' %}"></script>
+<input type="text" id="search" onkeyup="searchPhonebook('Groups')" placeholder="Search groups...">
+<br><br>
+
+<table id="Groups" class="phonebook">
+    <tr>
+        <th>Group Number</th>
+        <th>Actions</th>
+      </tr>
+    {% for group in groups %}
+    <tr>
+      <td>{{ group.value }}</td>
+      <td>
+        <a href="/operator/group/{{group.value}}"" id="{{number.value}}"><i class="fa-solid fa-gear"></i>Manage</a> |  
+        <a href="/operator/number/delete/{{group.value}}"> <i class="fa-solid fa-trash"></i>Delete</a> 
+      </td>
+    </tr>
+    {% endfor %}
+
+  </table> 
+
+{% endblock %}

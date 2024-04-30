@@ -1,0 +1,66 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+}
+h1{
+	color:#0d048b
+}
+
+h2{
+	color:#0d048b
+}
+
+form {
+	max-width: 400px;
+}
+label, input, textarea, select{
+	display:block;
+	width:100%;
+}
+
+input[type="submit"]{
+	display:inline-block;
+	width:auto;
+}
+
+.errorlist {
+	padding:0;
+	margin:0;
+}
+.errorlist li{
+	color:red;
+	list-style:none;
+}
+
+.alert{
+	padding:0.5rem;	
+}
+
+.alert-success{
+	background-color: #dfd
+}
+.alert-error{
+	background-color:#ba2121;
+	color:#fff;
+}
+
+.phonebook {
+	border-collapse: collapse;
+	width: 60%;
+  }
+  
+.phonebook td, .phonebook th {
+border: 1px solid #ddd;
+padding: 8px;
+}
+
+.phonebook tr:nth-child(even){background-color: #f2f2f2;}
+
+.phonebook tr:hover {background-color: #ddd;}
+
+.phonebook th {
+padding-top: 12px;
+padding-bottom: 12px;
+text-align: left;
+background-color: #2100c5;
+color: white;
+}

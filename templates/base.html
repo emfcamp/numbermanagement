@@ -1,0 +1,87 @@
+{%load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{% static 'css/reset.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/simple-grid.css' %}" />
+        <link rel="stylesheet" href="{% static 'css/numberwang.css' %}" />
+        <link href="{% static 'css/all.min.css' %}" rel="stylesheet"><!-- Fontawesome -->
+        <script src="{% static 'js/app.js' %}" defer></script>
+        <title>{% if title %} {{title}} {% else %} EMF NumberWang {% endif %}</title>
+    </head>
+    <body>
+        <div class="jumbotron">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 center">
+                        <h1><a href="/">NumberWang</a></h1>
+                        <p>Electromagnetic Field's Number Management System</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="menu">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <p>
+                                    <a href="/phonebook">Public Phonebook</a>
+                                    | <a href="/about">About</a>
+                            {%if request.user.is_authenticated %}
+                                    | <a href="{% url 'profile' %}">{{ request.user.username | title }}'s Profile</a>
+                                    | <a href="/number">My Numbers</a> 
+                                    | <a href="/number/create">Add A Number</a>
+                                {% if request.user.operator.isOperator %}
+                                    | <a href="/operator">Operator</a>
+                                {%endif%}
+                                | <a href="{% url 'logout' %}">Logout</a>
+                            {%else%}
+                                    | <a href="{% url 'login' %}">Login</a>
+                            {%endif%}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        {% if messages %}
+        <div class="container">
+        <div class="row">
+        <div class="col-12">
+            <ul class="messages"> 
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+        </div>
+        </div>
+        {% endif %}
+        
+        <div class="container">
+            {% block content_formatted %}
+                <div class="row">
+                    <div class="col-12">
+                        <h2>
+                        {% if title %} 
+                            {{title}}
+                        {% else %}
+                            No title set - could remove this warning but I suspect all pages would benefit from one.
+                        {% endif %}
+                        </h2>
+
+                        {% if description %} 
+                            <p>{{description}}</p>
+                        {% endif %}
+
+                        {% block content %}
+                        {% endblock content %}
+                    </div>
+                </div>
+            {% endblock content_formatted %}
+        </div>
+
+    </body>
+</html>

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{%block content_formatted%}
+	<div class="row">
+		<div class="col-12">
+			<h2>Login</h2>
+			<p><a href="/register">Register a New Account</a></p>
+		</div>
+		<div class="col-12">
+			<form method="POST" novalidate>
+				{% csrf_token %}
+
+				{% for field in form.visible_fields %}
+					<div class="col-3 form-label">{{ field.label }}</div>
+					<div class="col-9 form-field">{{ field }}</div>
+				{% endfor %}
+			
+				{% for hidden in form.hidden_fields %}
+					{{ hidden }}
+				{% endfor %}
+				<div class="col-3"></div>
+				<div class="col-9"><button type="submit">Login</button></div>
+
+				<div class="col-3"></div>
+				<div class="col-9">
+					<p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
+				</div>
+			</form>
+		</div>
+	</div>
+{% endblock content_formatted%}

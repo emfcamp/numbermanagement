@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2 class="font-weight-light my-4 text-center">Request New Email Link</h2>
+    <form method='POST' >
+        {% csrf_token %}
+        <p>{{form}}</p>
+        <p><button class="btn btn-outline-info" type="submit">Request New Email</button></p>
+    </form>
+
+{% endblock content %}

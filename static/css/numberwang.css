@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+* {
+    font-family: 'Raleway', sans-serif;
+    color: #333447;
+    line-height: 1.5;
+}
+
+
+h1 { font-size: 2.5rem; }
+h2, h3 { margin-top: 1.5rem;}
+hr+h3 {margin-top:0;}
+
+p.small { font-size: 0.8rem; }
+p.big { font-size: 1.5rem; }
+p+p{margin-top:1em;}
+
+table {width:100%}
+table, tr, th, td {text-align: left;}
+td,th {padding:0.1rem 0.5rem;}
+tr {border-bottom: 1px solid #ccc}
+tr:nth-child(even){background-color: #f2f2f2;}
+th {
+    background-color: #0d048b; 
+    color: white;
+    text-shadow: 1px 1px black;
+}
+
+td+td, th+th {border-left: 1px solid #ccc;}
+
+ol {
+  counter-reset: item;
+  list-style: decimal inside;
+  padding-left:2em;
+  margin: 0.5em 0;
+
+}
+
+ul {
+    list-style: disc inside;
+    padding-left:2em;
+    margin: 0.5em 0;
+  }
+
+hr {
+    border: 0;
+    height: 1px;
+    background: #333;
+    background-image: linear-gradient(to right, #eee, #aaa, #eee);
+    margin: 1rem;
+}
+
+@media only screen and (min-width: 45em) {  /* 540px */
+    h1 { font-size: 4rem; }
+    td.Date {white-space: nowrap;}
+
+}
+
+.jumbotron {
+    background: #0d048b;
+    background-image: linear-gradient(#0a036a, #0d048b);
+    width: 100%;
+    z-index: 100 !important;
+}
+
+.form-label {font-weight:bold;}
+
+.form-error {
+    font-weight:bold;
+    color: #D21E2B;
+    text-align: left;
+}
+
+input.wide {box-sizing: border-box; width: 100%; font-size:1rem; line-height: 2rem; margin:0;}
+input[type=text].wide { padding-left: .5rem; padding-right: .5rem;}
+
+iframe.video{width:100%; aspect-ratio: 16 / 9}
+
+@media only screen and (min-width: 45em) {  /* 540px */
+    .form-label {text-align: right;}
+}
+
+.jumbotron p {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.jumbotron a, .jumbotron a:hover, .jumbotron a:visited { color:inherit; text-decoration: inherit;}
+
+@media only screen and (min-width: 45em) {  /* 540px */
+    .jumbotron p {font-size:1.3rem;}
+}
+
+.jumbotron h1,
+.jumbotron p {
+    color: #fff;
+    text-shadow: 1px 1px black;
+}
+
+div.menu {background-color: #333; color: #eee;}
+div.menu p { color:#aaa;}
+div.menu a, div.menu a:visited { color:#eee; text-decoration: inherit;}
+div.menu a:hover {text-decoration: underline;}
+div.menu a {
+    margin:0 0.1em;
+    font-weight: 500;
+    white-space: nowrap;
+}
+div.menu a:first-of-type {margin-left:0;}
+div.menu a:last-of-type {margin-right:0;}
+
+
+@media only screen and (min-width: 45em) {  /* 540px */
+    div.menu a {margin:0 0.5em;}
+}
+
+button {
+    box-shadow: 0px 1px 0px 0px #fff6af;
+    background:linear-gradient(to top, #D21E2B, hsl(356, 56%, 54%));
+    background-color: hsl(356, 56%, 54%);
+	border-radius:6px;
+    border:1px solid hsl(356, 56%, 54%);
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-weight:bold;
+	padding:6px 24px;
+	text-decoration:none;
+    text-shadow: 1px 1px 1px #000;
+}
+button:hover {
+    background:linear-gradient(to bottom, #D21E2B, hsl(356, 56%, 54%));
+    text-shadow: -1px -1px 1px #000;
+}
+button:active {
+	position:relative;
+	top:1px;
+}
+
+.error, .alert-error   {margin-top:1rem; background-color:pink;}
+.success, .alert-success {margin-top:1rem; background-color:palegreen;}
+
+
+.buttongrid 
+{
+    height: 60px;
+    border-left: none;
+    text-align: center; 
+    vertical-align: middle;
+}
