@@ -5,6 +5,7 @@
     line-height: 1.5;
 }
 
+[class^="col"].collapse { margin:0;}
 
 h1 { font-size: 2.5rem; }
 h2, h3 { margin-top: 1.5rem;}
@@ -20,7 +21,8 @@ td,th {padding:0.1rem 0.5rem;}
 tr {border-bottom: 1px solid #ccc}
 tr:nth-child(even){background-color: #f2f2f2;}
 th {
-    background-color: #0d048b; 
+    background-color: #213018; 
+    /* background-color: #040d48b; */
     color: white;
     text-shadow: 1px 1px black;
 }
@@ -41,6 +43,22 @@ ul {
     margin: 0.5em 0;
   }
 
+  dl {
+    display: grid;
+    grid-template-columns: max-content auto;
+    margin: 1rem;
+  }
+  
+  dt {
+    grid-column-start: 1;
+    font-weight:bold;
+    padding-right: 1rem;
+  }
+  
+  dd {
+    grid-column-start: 2;
+  }
+
 hr {
     border: 0;
     height: 1px;
@@ -56,8 +74,9 @@ hr {
 }
 
 .jumbotron {
-    background: #0d048b;
-    background-image: linear-gradient(#0a036a, #0d048b);
+    background: #213018;
+    /* background: #0d048b; */
+    /* background-image: linear-gradient(#0a036a, #0d048b); */
     width: 100%;
     z-index: 100 !important;
 }
@@ -74,6 +93,8 @@ input.wide {box-sizing: border-box; width: 100%; font-size:1rem; line-height: 2r
 input[type=text].wide { padding-left: .5rem; padding-right: .5rem;}
 
 iframe.video{width:100%; aspect-ratio: 16 / 9}
+img.zoiperqr{width:300px; height: 270px; object-fit: cover; object-position:0 0;}
+
 
 @media only screen and (min-width: 45em) {  /* 540px */
     .form-label {text-align: right;}
@@ -84,7 +105,11 @@ iframe.video{width:100%; aspect-ratio: 16 / 9}
     font-weight: 500;
 }
 
-.jumbotron a, .jumbotron a:hover, .jumbotron a:visited { color:inherit; text-decoration: inherit;}
+.jumbotron a, .jumbotron a:hover, .jumbotron a:visited { 
+	color:#f0f0f4; 
+	font-weight:500; 
+	text-decoration: inherit;
+}
 
 @media only screen and (min-width: 45em) {  /* 540px */
     .jumbotron p {font-size:1.3rem;}

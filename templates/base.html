@@ -9,15 +9,15 @@
         <link rel="stylesheet" href="{% static 'css/numberwang.css' %}" />
         <link href="{% static 'css/all.min.css' %}" rel="stylesheet"><!-- Fontawesome -->
         <script src="{% static 'js/app.js' %}" defer></script>
-        <title>{% if title %} {{title}} {% else %} EMF NumberWang {% endif %}</title>
+        <title>{% if title %} {{title}} {% else %} EMF Number Management {% endif %}</title>
     </head>
     <body>
         <div class="jumbotron">
             <div class="container">
                 <div class="row">
                     <div class="col-12 center">
-                        <h1><a href="/">NumberWang</a></h1>
-                        <p>Electromagnetic Field's Number Management System</p>
+                        <h1><a href="/">Electromagnetic Phonebook</a></h1>
+			<p>Thats NumberWang!</p>
                     </div>
                 </div>
             </div>
@@ -67,8 +67,6 @@
                         <h2>
                         {% if title %} 
                             {{title}}
-                        {% else %}
-                            No title set - could remove this warning but I suspect all pages would benefit from one.
                         {% endif %}
                         </h2>
 

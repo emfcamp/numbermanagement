@@ -59,4 +59,6 @@ class Range(models.Model):
     end = models.PositiveIntegerField()
     privileged = models.BooleanField()
 
+    def __str__(self):
+        return str(self.start)+"-"+str(self.end)
 

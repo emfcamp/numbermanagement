@@ -1,0 +1,28 @@
+<dl>
+    <dt>Number:</dt>
+        <dd>{{number.value}}</dd>
+    <dt>{{number.typeofservice.param_name}}:</dt>
+        <dd>{{number.param}}</dd>
+    <dt>System PIN:</dt>
+        <dd>0000</dd>
+</dl>
+
+<h3>Register your handset on the network</h3>
+<ol>
+    <li>Go to "Register Handset" or similar in your handset's menu.
+        <ul>
+            <li>For example in the Gigaset A170 its Menu> Settings > Handset > Register HS</li>
+        </ul>
+    </li>
+    <li>Enter the System PIN: 0000</li>
+</ol>
+<p>Your DECT handset should now be on the network, but with a temporary number</p>
+
+<h3>Activate this number on your handset</h3>
+<ol>
+    <li>Dial 900</li>
+    <li>When asked, enter your number: {{number.value}}</li>
+    <li>When asked, enter your activation code: {{number.param}}</li>
+    <li>Wait for confirmation that it has been successful</li>
+</ol>
+<p>Alternatively, you can dial the whole number activation in one go: 900 {{number.value}} {{number.param}}</p>
