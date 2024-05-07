@@ -31,7 +31,7 @@ def manage_group(request, id):
         raise Http404
     else:
         if request.method == 'GET':
-            members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__label", "delay")
+            members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__label", "delay").order_by('member_id')
             joinform = JoinGroupForm(group=group)
             context = {'members': members, 'group': group, 'joinform': joinform, 'title': "Group "+str(id)}
             return render(request, 'group/managegroup.html', context)
@@ -39,7 +39,7 @@ def manage_group(request, id):
             joinform = JoinGroupForm(request.POST, group=group)
             joinform.instance.group=group
             if joinform.is_valid():
-                print('saving')
+                publish('updategroup', id, 'Group')
                 joinform.save()
                 mid = joinform.cleaned_data['member']
                 messages.success(request, str(mid)+' addded to Group: '+str(id))
@@ -47,11 +47,11 @@ def manage_group(request, id):
 
 @login_required
 def leave_group(request, gid, mid):
-    group = Group.objects.select_related("value").filter(value__user=request.user).filter(value=id).first() 
+    group = Group.objects.select_related("value").filter(value__user=request.user).filter(value=gid).first() 
     if group == None:
         raise Http404
     member = Membership.objects.get(group=gid, member=mid)
     member.delete()
-    publish('remove', gid, 'Group')
+    publish('updategroup', gid, 'Group')
     messages.success(request, str(mid)+' removed from Group: '+str(gid))
     return redirect('/group/'+str(gid))

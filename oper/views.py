@@ -175,6 +175,7 @@ def manage_group(request, id):
             joinform.instance.group=group
             if joinform.is_valid():
                 joinform.save()
+                publish('updategroup', id, 'Group')
                 mid = joinform.cleaned_data['member']
                 messages.success(request, str(mid)+' addded to Group: '+str(id))
             return redirect('/operator/group/'+str(id))
@@ -187,6 +188,6 @@ def leave_group(request, gid, mid):
         raise Http404
     member = Membership.objects.get(group=gid, member=mid)
     member.delete()
-    publish('remove', gid, 'Group')
+    publish('updategroup', gid, 'Group')
     messages.success(request, str(mid)+' removed from Group: '+str(gid))
     return redirect('/operator/group/'+str(gid))

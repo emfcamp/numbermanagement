@@ -31,7 +31,7 @@ def sign_in(request):
     elif request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data['username']
+            username = form.cleaned_data['username'].lower()
             password = form.cleaned_data['password']
             user = authenticate(request,username=username,password=password)
             if user:
@@ -109,7 +109,7 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
                       " If you don't receive an email, " \
                       "please make sure you've entered the address you registered with, and check your spam folder."
     success_url = reverse_lazy('login')
-    from_email= 'sammachin@fastmail.com'
+    from_email= 'poc@emfcamp.org'
 
 
 class ChangePasswordView(SuccessMessageMixin, PasswordChangeView):

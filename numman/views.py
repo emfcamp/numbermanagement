@@ -14,7 +14,7 @@ def home(request):
     return render(request, 'base.html', {'title': 'Number Management System', 'description':'Welcome to Numberwang!'})
 
 def phonebook(request):
-    publicnumbers = Number.objects.filter(directory=True)
+    publicnumbers = Number.objects.filter(directory=True).order_by('value')
     context = {'numbers': publicnumbers, 'title': "Phonebook"}
     return render(request, 'numman/phonebook.html', context)
 
@@ -78,7 +78,7 @@ def create_number(request):
 
 @login_required
 def my_numbers(request):
-    numbers = Number.objects.filter(user=request.user)
+    numbers = Number.objects.filter(user=request.user).order_by('value')
     context = {'numbers': numbers, 'title': "My Numbers"}
     return render(request, 'numman/mynumbers.html', context)
 
@@ -96,6 +96,7 @@ def edit_number(request, id):
             form = EditNumberForm(request.POST, instance=number)
             if form.is_valid():
                 form.save()
+                publish('remove', id, number.typeofservice )
                 messages.success(request, 'The post has been updated successfully.')
                 return redirect('/number')
             else:

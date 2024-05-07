@@ -1,0 +1,24 @@
+<p><a href="/group/{{number.value}}"><i class="fa fa-list" aria-hidden="true"></i> Manage Group {{number.value}}</a> to change which extensions are in the group, and their ring delay.</p>
+
+<dl>
+    <dt>Group Number:</dt>
+        <dd>{{number.value}}</dd>
+    <dt>{{number.typeofservice.param_name}}:</dt>
+        <dd>{{number.param}}</dd>
+</dl>
+
+<h3>Use a phone handset to add/remove itself from this group</h3>
+<p>Do the following on a phone handset to add or remove that phone's extension from this group.
+    <br>(Extensions added like this will always have no Ring Delay.)</p>
+
+<ul>
+    <li>Dial 910</li>
+    <li>When asked, enter the group number: {{number.value}}</li>
+    <li>When asked, enter the  Activation Code: {{number.param}}</li>
+    <li>Wait for confirmation that it has been successful</li>
+</ul>
+<p>Alternatively, you can dial the whole group activation in one go <a href="tel:910{{number.value}}{{number.param}}">910{{number.value}}{{number.param}}</a>
+
+
+
+

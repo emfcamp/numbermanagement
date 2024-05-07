@@ -1,0 +1,30 @@
+<dl>
+    <dt>SIP username:</dt>
+        <dd>{{ number.value }}</dd>
+    <dt>{{number.typeofservice.param_name}}:</dt>
+        <dd>{{number.param}}</dd>
+    <dt>SIP Server:</dt>
+        <dd>clients.sip.poc.emf.camp </dd>
+    <dt>Port:</dt>
+        <dd>5060 (TCP or UDP)</dd>
+</dl>
+
+<h3>SIP Clients</h3>
+<p>You can use any SIP client to connect to the service. Here are some suggestions:</p>
+<ul>
+    <li>Android: <a href='https://play.google.com/store/apps/details?id=com.zoiper.android.zoiperbeta.app&hl=en'>Zoiper</a> (Free)</li>
+    <li>iPhone: <a href='https://apps.apple.com/gb/app/zoiper-lite-voip-soft-phone/id438949960'>Zoiper Lite</a> (Free)</li>
+    <li>iPhone: <a href="https://apps.apple.com/gb/app/groundwire-voip-sip-softphone/id378503081">Groundwire</a> (£9.99)</li>
+    <li>Mac: <a href="https://apps.apple.com/gb/app/telephone/id406825478?mt=12">Telephone</a> (Free)</li>
+    <li>Linux: <a href="https://www.zoiper.com/en/voip-softphone/download/current">Zoiper</a> (Free)</li>
+    <li>PC: <a href="https://www.zoiper.com/en/voip-softphone/download/current">Zoiper</a> (Free)</li>
+</ul>
+</ul>
+
+<h4>Zoiper</h4>
+<p>If you use Zoiper, you can scan the QR code Below to automatically set it up.</p>
+<p>Zoiper users a push proxy service to keep the client connected, the Android Beta includes this for free, or for iOS
+    you can get a 7 day free trial of the feature in app.</p>
+
+<img src="https://oem.zoiper.com/qr.php?provider_id=272ec020802dd4687f4c2a2c984acc67&u={{ number.value }}&h=&p={{number.param}}&o=&t=&a=&tr="
+        alt="QR code" class="zoiperqr"/>
