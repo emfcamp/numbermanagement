@@ -26,7 +26,8 @@ th {
     color: white;
     text-shadow: 1px 1px black;
 }
-table.sortable th {cursor: pointer;}
+table.sortable th:not([data-sort-method='none']) {cursor: pointer;}
+
 
 td+td, th+th {border-left: 1px solid #ccc;}
 
