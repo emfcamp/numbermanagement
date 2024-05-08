@@ -39,10 +39,22 @@
                     <td>{{ number.value }}</td>
                     <td>{{ number.label }}</td>
                     <td>{{ number.typeofservice }}</td>
-                    <td>
-                        <a href="/number/info/{{number.value}}"" id="{{number.value}}"><i class="fa-solid fa-gear"></i>Details</a> |  
-                        <a href="/number/edit/{{number.value}}">  <i class="fa-solid fa-pen"></i>Edit</a> |  
-                        <a href="/number/delete/{{number.value}}"> <i class="fa-solid fa-trash"></i>Delete</a> 
+                    <td class="inline-menu">
+                        <div class="col-4 collapse center">
+                            <a href="/number/info/{{number.value}}"" id="{{number.value}}">
+                                <i class="fa-solid fa-gear"></i> Details
+                            </a>
+                        </div>
+                        <div class="col-4 collapse center">
+                            <a href="/number/edit/{{number.value}}">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </a>
+                        </div>
+                        <div class="col-4 collapse center">
+                            <a href="/number/delete/{{number.value}}">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </a>
+                        </div>
                     </td>
     </tr>
     {% endfor %}
