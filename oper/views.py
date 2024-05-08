@@ -69,6 +69,10 @@ def create_number(request):
         form.instance.user  = request.user
         if form.is_valid():
             form.save()
+            tosGroupObj = TypeOfService.objects.get(name='Group')
+            if form.cleaned_data['typeofservice'] == tosGroupObj:
+                n = Number.objects.get(pk=form.cleaned_data['value'])
+                Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
             publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
             return redirect('/operator/number')
         else:
