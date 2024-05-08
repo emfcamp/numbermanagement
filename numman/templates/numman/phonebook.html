@@ -8,8 +8,6 @@
         <h2>
         {% if title %} 
             {{title}}
-        {% else %}
-            No title set - could remove this warning but I suspect all pages would benefit from one.
         {% endif %}
         </h2>
 
@@ -30,8 +28,8 @@
             <input type="reset" class="wide" value="Clear Search">
         </div>
         <div class="col-12">
-            <table id="phonebook" class="phonebook">
-                <tr>
+            <table id="phonebook" class="phonebook sortable">
+                <tr data-sort-method='none'>
                     <th>Number</th>
                     <th>Label</th>
                     <th>Type</th>
@@ -49,5 +47,8 @@
 </div>
 
 <script src="{% static 'js/search.js' %}"></script>
+<script>
+    new Tablesort(document.getElementById('phonebook'));
+</script>
 
 {% endblock %}

@@ -1,31 +1,56 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-<script src="{% static 'js/search.js' %}"></script>
-<input type="text" id="search" onkeyup="searchPhonebook('Numbers')" placeholder="Search my numbers...">
-<br><br>
+{% block content_formatted %}
+<div class="row">
+    <div class="col-12">
+        <h2>
+        {% if title %} 
+            {{title}}
+        {% endif %}
+        </h2>
 
-<table id="Numbers" class="phonebook">
-    <tr>
-        <th>Number</th>
-        <th>Label</th>
-        <th>Type</th>
-        <th>Actions</th>
-      </tr>
-    {% for number in numbers %}
-    <tr>
-      <td>{{ number.value }}</td>
-      <td>{{ number.label }}</td>
-      <td>{{ number.typeofservice }}</td>
-      <td>
-        <a href="/number/info/{{number.value}}"" id="{{number.value}}"><i class="fa-solid fa-gear"></i>Details</a> |  
-        <a href="/number/edit/{{number.value}}">  <i class="fa-solid fa-pen"></i>Edit</a> |  
-        <a href="/number/delete/{{number.value}}"> <i class="fa-solid fa-trash"></i>Delete</a> 
-      </td>
+        {% if description %} 
+            <p>{{description}}</p>
+        {% endif %}
+    </div>
+</div>
+<div class="row">
+    <form id="searchform">
+        <div class="col-9">
+            <input type="text" id="search" 
+                class="wide"
+                oninput="searchPhonebook('phonebook')" 
+                placeholder="Search the phonebook...">
+        </div>
+        <div class="col-3">
+            <input type="reset" class="wide" value="Clear Search">
+        </div>
+        <div class="col-12">
+            <table id="phonebook" class="phonebook sortable">
+                <tr data-sort-method='none'>
+                    <th>Number</th>
+                    <th>Label</th>
+                    <th>Type</th>
+                    <th data-sort-method='none'>Modify</th>
+                </tr>
+                {% for number in numbers %}
+                <tr>
+                    <td>{{ number.value }}</td>
+                    <td>{{ number.label }}</td>
+                    <td>{{ number.typeofservice }}</td>
+                    <td>
+                        <a href="/number/info/{{number.value}}"" id="{{number.value}}"><i class="fa-solid fa-gear"></i>Details</a> |  
+                        <a href="/number/edit/{{number.value}}">  <i class="fa-solid fa-pen"></i>Edit</a> |  
+                        <a href="/number/delete/{{number.value}}"> <i class="fa-solid fa-trash"></i>Delete</a> 
+                    </td>
     </tr>
     {% endfor %}
 
-  </table> 
+</table> 
 
+<script src="{% static 'js/search.js' %}"></script>
+<script>
+    new Tablesort(document.getElementById('phonebook'));
+</script>
 {% endblock %}
