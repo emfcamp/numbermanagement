@@ -96,7 +96,7 @@ def edit_number(request, id):
             form = EditNumberForm(request.POST, instance=number)
             if form.is_valid():
                 form.save()
-                publish('remove', id, number.typeofservice )
+                publish('removecache', id, number.typeofservice )
                 messages.success(request, 'The post has been updated successfully.')
                 return redirect('/number')
             else:
