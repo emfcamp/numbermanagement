@@ -117,6 +117,7 @@ def join_group(request, event, group):
         groupobj = Group.objects.filter(value=group).filter(event=event).get()
         print(groupobj)
         Membership.objects.create(group=groupobj, member=number, delay=int(body['delay']))
+        publish('updategroup', group, 'Group')
         return HttpResponse(status=201)
     else:
         raise PermissionDenied()
@@ -134,7 +135,7 @@ def leave_group(request, event, group):
         groupobj = Group.objects.filter(value=group).filter(event=event).get()
         member = Membership.objects.get(group=groupobj, member=body['member'])
         member.delete()
-        publish('remove', group, 'Group')
+        publish('updategroup', group, 'Group')
         return HttpResponse(status=202)
     else:
         raise PermissionDenied()
