@@ -82,7 +82,7 @@ def profile(request):
 def jambonz(request):
     if request.method == 'GET':
         form = JambonzForm(initial={"username": request.user.username})
-        description = 'Use this form to create or update your account on the Jambonz platform, setting the password here for an existing account will change the password in Jambonz.<br> Your username will be the same as this platform.<br>You can access Jambonz at <a href="https://jambonz.poc.emf.camp">jambonz.poc.emf.camp</a>'
+        description = 'Use this form to create or update your account on the Jambonz platform, setting the password here for an existing account will change the password in Jambonz.<ul><li>Your username will be the same as this platform.<li>Your password must be between 8 and 20 characters<li>You can access Jambonz at <a href="https://jambonz.poc.emf.camp">jambonz.poc.emf.camp</a></ul>'
         return render(request, 'form.html', { 'form': form, 'title' :'Set Jambonz Password', 'description' : description})   
     if request.method == 'POST':
         form = JambonzForm(request.POST, request=request)

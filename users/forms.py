@@ -30,8 +30,8 @@ class UpdateUserForm(forms.ModelForm):
 
 class JambonzForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    password1 = forms.CharField(min_length=8, max_length=20, widget=forms.PasswordInput)
-    password2 = forms.CharField(min_length=8, max_length=20, widget=forms.PasswordInput)
+    password1 = forms.CharField(widget=forms.PasswordInput)
+    password2 = forms.CharField(widget=forms.PasswordInput)
     password1.label = "Password"
     password2.label = "Confirm Password"
 
@@ -48,6 +48,8 @@ class JambonzForm(forms.Form):
         username = cd.get('username')
         if (password2 != password1):
             raise ValidationError("Passwords do not match")
+        if not(8 <= len(password1) <= 20):
+            raise ValidationError("Password must be between 8 and 20 chars")
         if (username != self.request.user.username):
             raise ValidationError("Incorrect Username")
         
