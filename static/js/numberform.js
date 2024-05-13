@@ -1278,9 +1278,8 @@ const activationCode = genActivationCode()
 const password = genPassword(4)
 
 function toggleTOS(v){    
-    let param;
+    const param = document.getElementById('id_param')
     let paramdata = tosdata[v]
-    param = document.getElementById('id_param')
     switch (paramdata.param_type) {
         case "TXT":
             label = document.querySelector("label[for=id_param]");
@@ -1296,7 +1295,7 @@ function toggleTOS(v){
             label.innerHTML = paramdata.param_name+":"
             param.type = 'text'
             param.readOnly = true
-            param.setAttribute("value", activationCode)
+            param.value = activationCode
             param.style.display = 'block' 
             break;
         case "PWG":
@@ -1347,10 +1346,23 @@ function toggleTOS(v){
             break;
     } 
     if (param.type == 'password'){
-        param.addEventListener('mouseover', function() { param.type = "text";}, false);
-        param.addEventListener('mouseout', function() { param.type = "password";}, false);
-    }
+        param.addEventListener('mouseover', showField, param);
+        param.addEventListener('mouseout', hideField, param);
+    } else {
+        param.removeEventListener('mouseover', showField);
+        param.removeEventListener('mouseout', hideField);
+    }   
 }
+function showField(param){
+    param.target.type = "text"
+}
+
+function hideField(param){
+    param.target.type = "password"
+}
+
+
+
 function validateNumber(n){
     let l = document.getElementById('error-id_value')   
     if (n.length == 4){
