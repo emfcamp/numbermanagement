@@ -8,7 +8,10 @@ from django.contrib import messages
 from django.conf import settings
 import requests
 from groups.models import Group
+import os.path 
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 
 def home(request):
     return render(request, 'base.html', {'title': 'Number Management System', 'description':'Welcome to Numberwang!'})
@@ -134,6 +137,12 @@ def number_info(request, id):
     number = Number.objects.filter(user=request.user).filter(value=id).first()
     if number == None:
         raise Http404
-    context = {'number': number, 'title': 'Settings for '+str(id)}
+    ins_file = "service_instructions/"+number.typeofservice_id+".html"
+    if os.path.exists(os.path.join(TEMPLATE_DIR, ins_file)):
+        instructions = ins_file
+    else:
+        instructions = "service_instructions/_DEFAULT.html"
+    print(instructions)
+    context = {'number': number, 'title': 'Settings for '+str(id), 'instructions' : instructions}
     return render(request, 'numman/numberinfo.html', context)
 

@@ -7,8 +7,8 @@
 <br><br>
 
 
-<table id="Numbers" class="phonebook">
-    <tr>
+<table id="Numbers" class="phonebook sortable">
+    <tr data-sort-method='none'>
         <th>Number</th>
         <th>Label</th>
         <th>Type</th>
@@ -21,7 +21,7 @@
       <td>{{ number.label }}</td>
       <td>{{ number.typeofservice }}</td>
       <td>{{ number.user }}</td>
-      <td>
+      <td data-sort-method='none'>
         <a href="number/edit/{{number.value}}"><i class="fa-solid fa-pen"></i>Edit</a> | </a>
         <a href="number/delete/{{number.value}}"> <i class="fa-solid fa-trash"></i>Delete</a> </a>
       </td>
@@ -29,5 +29,7 @@
     {% endfor %}
 
   </table> 
-
+  <script>
+    new Tablesort(document.getElementById('Numbers'));
+</script>
 {% endblock %}
