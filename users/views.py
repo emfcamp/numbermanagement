@@ -71,7 +71,7 @@ def profile(request):
         if user_form.is_valid():
             user_form.save()
             messages.success(request, 'Your profile is updated successfully')
-            return redirect(to='users-profile')
+            return redirect('profile')
     else:
         user_form = UpdateUserForm(instance=request.user)
     return render(request, 'users/profile.html', {'user_form': user_form})
