@@ -75,6 +75,7 @@ def create_number(request):
                 n = Number.objects.get(pk=form.cleaned_data['value'])
                 Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
             publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
+            messages.success(request, 'The number has been created successfully.')
             return redirect('/number')
         else:
             return render(request, 'numman/create_number.html', {'form': form, 'tosdata': getTOSData(), 'title': "Create new Number"})
@@ -100,7 +101,7 @@ def edit_number(request, id):
             if form.is_valid():
                 form.save()
                 publish('removecache', id, number.typeofservice )
-                messages.success(request, 'The post has been updated successfully.')
+                messages.success(request, 'The number has been updated successfully.')
                 return redirect('/number')
             else:
                 messages.error(request, 'Please correct the following errors:')
