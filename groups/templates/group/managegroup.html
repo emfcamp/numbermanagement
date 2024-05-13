@@ -1,37 +1,62 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-<table id="Group" class="phonebook">
-    <tr>
-        <th>Number</th>
-        <th>Label</th>
-        <th>Ring Delay</th>
-        <th>Actions</th>
-      </tr>
-    {% for member in members %}
-    <tr>
-    <form>
-      <td>{{ member.member_id }}</td>
-      <td>{{ member.member__label }}</td>
-      <td>{{ member.delay }}</td>
-      <td><a href="/group/remove/{{group.value}}/{{member.member_id}}"> <i class="fa-solid fa-trash"></i> Remove</a></td>
-    </form>
-    </tr>
-    {% endfor %}
-    {% if members|length < 10 %}
-      <tr>
-      <form action="/group/{{group}}" id="addtogroup" method="post">
-        {%csrf_token%}
-        <td>{{ joinform.member }}</td>
-        <td></td>
-        <td>{{ joinform.delay }}</td>
-        <td><a href="#" onclick="document.getElementById('addtogroup').submit();"><i class="fa fa-plus" aria-hidden="true"></i>
-          Add</a></td>
-      </form>
-      </tr>
-    {% endif %} 
-  </table> 
+{% block content_formatted %}
+<div class="row">
+    <div class="col-12">
+        <h2>
+        {% if title %} 
+            {{title}}
+        {% endif %}
+        </h2>
 
+        {% if description %} 
+            <p>{{description}}</p>
+        {% endif %}
+    </div>
+</div>
+<div class="row">
+    {% if members|length < 10 %}
+        <form action="/group/{{group}}" id="addtogroup" method="post">
+            {%csrf_token%}
+            <div class="col-3 form-label">Add Number To Group</div>
+                <div class="col-9 form-field">{{ joinform.member }}</div>
+            <div class="col-3 form-label">With Delay</div>
+                <div class="col-9 form-field">{{ joinform.delay }}</div>
+            <div class="col-3"></div>
+            <div class="col-9"><button type="submit">Submit</button></div>
+        </form>
+    {% else %}
+        <div class="col-12">
+            <p>Group full. Can't add any more numbers.</p>
+        </div>
+    {% endif %} 
+    <div class="col-12">
+        <table id="phonebook" class="phonebook sortable">
+            <tr data-sort-method='none'>
+                <th>Number</th>
+                <th>Label</th>
+                <th>Ring Delay</th>
+                <th data-sort-method='none'>Actions</th>
+            </tr>
+            {% for member in members %}
+            <tr>
+
+                <td>{{ member.member_id }}</td>
+                <td>{{ member.member__label }}</td>
+                <td>{{ member.delay }}</td>
+                <td><a href="/group/remove/{{group.value}}/{{member.member_id}}"> <i class="fa-solid fa-trash"></i> Remove</a></td>
+            </tr>
+            {% endfor %}
+        </table> 
+    </div>
+
+</div>
+
+<script>
+    new Tablesort(document.getElementById('phonebook'));
+</script>
 
 {% endblock %}
+
+

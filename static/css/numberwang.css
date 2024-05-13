@@ -26,6 +26,8 @@ th {
     color: white;
     text-shadow: 1px 1px black;
 }
+table.sortable th:not([data-sort-method='none']) {cursor: pointer;}
+
 
 td+td, th+th {border-left: 1px solid #ccc;}
 
@@ -132,6 +134,11 @@ div.menu a {
 }
 div.menu a:first-of-type {margin-left:0;}
 div.menu a:last-of-type {margin-right:0;}
+
+
+.inline-menu a{
+    text-decoration-skip: spaces;
+}
 
 
 @media only screen and (min-width: 45em) {  /* 540px */
