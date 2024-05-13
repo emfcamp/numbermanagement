@@ -30,8 +30,8 @@ class UpdateUserForm(forms.ModelForm):
 
 class JambonzForm(forms.Form):
     username = forms.CharField(widget=forms.TextInput(attrs={'readonly':'readonly'}))
-    password1 = forms.CharField(max_length=65, widget=forms.PasswordInput)
-    password2 = forms.CharField(max_length=65, widget=forms.PasswordInput)
+    password1 = forms.CharField(min_length=8, max_length=20, widget=forms.PasswordInput)
+    password2 = forms.CharField(min_length=8, max_length=20, widget=forms.PasswordInput)
     password1.label = "Password"
     password2.label = "Confirm Password"
 
