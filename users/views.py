@@ -53,13 +53,12 @@ def sign_up(request):
         return render(request, 'users/register.html', { 'form': form})   
     if request.method == 'POST':
         form = RegisterForm(request.POST)
-        print(request.POST)
         if form.is_valid():
             user = send_verification_email(request, form)
             user.username = user.username.lower()
             user.save()
             messages.success(request, 'Please check your email for a verification message.')
-            return redirect('posts')
+            return redirect('login')
         else:
             return render(request, 'users/register.html', {'form': form})
 
@@ -87,7 +86,6 @@ def jambonz(request):
     if request.method == 'POST':
         form = JambonzForm(request.POST, request=request)
         if form.is_valid():
-            print(form.cleaned_data)
             data = {}
             data['username'] = form.cleaned_data['username']
             data['password'] = form.cleaned_data['password1']
