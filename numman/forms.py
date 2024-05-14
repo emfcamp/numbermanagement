@@ -40,7 +40,7 @@ class EditNumberForm(forms.ModelForm):
         super (EditNumberForm,self ).__init__(*args,**kwargs) # populates the post
         self.fields['directory'].label = "Public Phonebook"
         self.fields['label'].label = "Description "
-        self.fields['fwd_number'].label = "Forward to"
+        self.fields['fwd_number'].label = "Fallback Number"
         
     class Meta:
         model = Number
