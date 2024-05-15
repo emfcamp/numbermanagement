@@ -71,7 +71,7 @@ The only requirement currently is Python 3, Django 5.0 or later and the django-e
 
 - Clone this repository
 
-	`git clone https://github.com/sammachin/numbermanagement`
+	`git clone https://github.com/emfcamp/numbermanagement`
 
 - Enter directory
 
