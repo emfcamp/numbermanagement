@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is an experiemental new number management app for the PoC at Events,
+This is a new number management app for the EMF Phone Team at Events,
 The goal of the app is to allow users to regsiter custom extensions and get appropriate credentials or configuration to use those with different Types of Service (DECT, SIP, Cellular, POTS etc)
 
 It will then expose provisioning feeds to the telephone systems to create the relevent configuration based on the ToS.
@@ -16,52 +16,31 @@ Operator - Has privileges to assign permissions to users, modify user services a
 User - Regular user, can create and update their own extensions and service parameters 
 Guest - Unregistered user, can view some public information such as directory.
 
-## User Stories (non-exhastive)
+## Features
+## WebApp
+- As an Admin I want to be able to create types of service eg DECT, SIP, POTS, Cellular etc.
+- As an Admin I want to be able to assign parameter fields to a Type of service
+- As an Admin I want to be able to define available number ranges for users to register from
+- As an Admin I want to be able to define permission flags for extensions  (external, international etc)
+- As an Admin I want to be able to designate users as operators
+- As a User I want to be able to register an account
+- As a User I want to be able to register a number from the available ranges with a type of service
+- As a User I want to be able to choose if my number appears in the phonebook
+- As a User I want to be able to delete one of my numbers
+- As a Guest I want to be able to view the phonebook
+- As an Operator I want to be able to assign a number to any user including privileged ranges and ToS
+- As an Operator I want to be able to assign permissions to an extension
+- As an Operator I want to be able to delete an extension from a User
+- As an Operator I want to be able to ban a User
+- As an Operator I want to be able to bar a number
+- As a User I want to be able to be able to reset my password
+- As a user I want to be able to update my name, email or password (username is fixed)
+- As a user I want to verify my email when I signup
 
-~As an Admin I want to be able to create types of service eg DECT, SIP, POTS, Cellular etc.~
-
-~As an Admin I want to be able to assign parameter fields to a Type of service~
-
-~As an Admin I want to be able to define available number ranges for users to register from~
-
-~As an Admin I want to be able to define permission flags for extensions  (external, international etc)~
-
-~As an Admin I want to be able to designate users as operators~
-
-~As a User I want to be able to register an account~
-
-~As a User I want to be able to register a number from the available ranges with a type of service~
-
-~As a User I want to be able to choose if my number appears in the phonebook~
-
-~As a User I want to be able to delete one of my numbers~
-
-~As a Guest I want to be able to view the phonebook~
-
-~As an Operator I want to be able to assign a number to any user including privileged ranges and ToS~
-
-~As an Operator I want to be able to assign permissions to an extension~
-
-~As an Operator I want to be able to delete an extension from a User~
-
-~As an Operator I want to be able to ban a User~
-
-~As an Operator I want to be able to bar a number~
-
-~As a User I want to be able to be able to reset my password~
-
-~As a user I want to be able to update my name, email or password~ (username is fixed)
-
-~As a user I want to verify my email when I signup~
-
-
-API 
-
-~As an app I want to be able to fetch all config for a given ToS~
-
-~As an Admin I want to be able to create API Keys~
-
-~As an Admin I want to limit API keys scope by ToS~
+### API 
+- As an app I want to be able to fetch all config for a given ToS
+- As an Admin I want to be able to create API Keys
+- As an Admin I want to limit API keys scope by ToS
 
 
 ## Running Locally
