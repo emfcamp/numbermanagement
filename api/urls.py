@@ -8,5 +8,5 @@ urlpatterns = [
     path('api/group/<str:event>/<int:group>', views.get_group, name='getgroup'),
     path('api/group/join/<str:event>/<int:group>', views.join_group, name='joingroup'),
     path('api/group/leave/<str:event>/<int:group>', views.leave_group, name='leavegroup'),
-
+    path('metrics', views.metrics, name='metrics'),
 ]
