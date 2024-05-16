@@ -78,7 +78,7 @@ def create_number(request):
             messages.success(request, 'The number has been created successfully.')
             return redirect('/number')
         else:
-            return render(request, 'numman/create_number.html', {'form': form, 'tosdata': getTOSData(), 'title': "Create new Number"})
+            return render(request, 'numman/create_number.html', {'form': form, 'tosdata': getTOSData(), 'ranges': getRanges(), 'userdata' : {"username": request.user.username}, 'title': "Create new Number"})
 
 @login_required
 def my_numbers(request):
