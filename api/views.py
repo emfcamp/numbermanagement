@@ -12,6 +12,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
 from django.core import serializers
+from django.contrib.auth.models import User
 from django.db.models import Count
 import json
 from django.conf import settings
@@ -154,6 +155,7 @@ class MetricsCollector(Collector):
         for row in counts:
             g.add_metric([row["event"], row["typeofservice"]], row["total"])
         yield g
+        yield GaugeMetricFamily("users", "Registered users", User.objects.count())
 
 REGISTRY.register(MetricsCollector())
 
