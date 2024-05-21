@@ -1,5 +1,10 @@
+from typing import Iterable
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404, JsonResponse
+from prometheus_client import generate_latest
+from prometheus_client.metrics_core import Metric
+from prometheus_client.registry import Collector
+from prometheus_client.core import GaugeMetricFamily, REGISTRY
 from .models import APIAuth
 from groups.models import Group, Membership
 from numman.models import  Event, Number, TypeOfService, Range, Permission
@@ -7,6 +12,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.forms.models import model_to_dict
 from django.core import serializers
+from django.contrib.auth.models import User
+from django.db.models import Count
 import json
 from django.conf import settings
 import requests
@@ -141,3 +148,16 @@ def leave_group(request, event, group):
         raise PermissionDenied()
 
 
+class MetricsCollector(Collector):
+    def collect(self) -> Iterable[Metric]:
+        counts = Number.objects.values("event", "typeofservice").annotate(total=Count('*'))
+        g = GaugeMetricFamily("numbers", "Registered numbers, by event and service", labels=["event", "service"])
+        for row in counts:
+            g.add_metric([row["event"], row["typeofservice"]], row["total"])
+        yield g
+        yield GaugeMetricFamily("users", "Registered users", User.objects.count())
+
+REGISTRY.register(MetricsCollector())
+
+def metrics(request):
+    return HttpResponse(generate_latest())
