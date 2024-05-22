@@ -3,3 +3,4 @@ django-extensions==3.2.3
 django-environ==0.11.2
 requests==2.31.0
 Django-Verify-Email==2.0.3
+prometheus_client==0.20.0
