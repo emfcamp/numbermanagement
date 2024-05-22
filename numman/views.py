@@ -150,5 +150,5 @@ def number_info(request, id):
 def available_numbers(request):
     takennumbers =  Number.objects.values('value')
     numberlist = [o['value'] for o in list(takennumbers)]
-    context = {'takennumbers': numberlist, 'rangedata': getRanges(), 'title': "Availble Numbers"}
+    context = {'takennumbers': numberlist, 'rangedata': getRanges(), 'title': "Available Numbers"}
     return render(request, 'numman/availible_numbers.html', context)
