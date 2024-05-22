@@ -1,0 +1,68 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% if title %} {{title}} {% else %} EMF Number Management {% endif %}</title>
+        <script src=" https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js "></script>
+         </head>
+
+        <body>
+
+        {% block content %}
+        {{ rangedata|json_script:"rangedata" }}
+        {{ takennumbers|json_script:"takennumbers"}}
+
+         <table id="numbers">
+         </table>
+
+
+    <script>
+        var allnumbers = []
+        const rangedata = JSON.parse(document.getElementById('rangedata').textContent);
+        const takennumbers = JSON.parse(document.getElementById('takennumbers').textContent); 
+        
+        rangedata.forEach(x => {
+            let n = _.range(x.start, x.end+1, 1)
+            allnumbers = allnumbers.concat(n)
+        });
+        
+        allnumbers.sort() 
+        let firstrow = Math.floor(allnumbers[0]/100)
+        let lastrow = Math.floor(allnumbers[allnumbers.length -1]/100)
+        tab = document.getElementById('numbers')
+        _.range(firstrow, lastrow+1, 1).forEach((idx =>{
+            let newRow = tab.insertRow(-1); 
+            newRow.id = String(idx)+"xx" 
+        }))
+        
+
+        function addnum(n){
+            ns = n.toString()
+            let tableRef = document.getElementById('numbers');
+            let row = document.getElementById(ns.slice(0, -2)+"xx")
+            let newCell = row.insertCell(-1);
+            if (takennumbers.includes(ns)){
+                let newText = document.createElement('s')
+                newText.innerText=ns
+                newCell.appendChild(newText);
+            } else {
+                let newText = document.createElement('b')
+                newText.innerText=ns
+                newCell.appendChild(newText);
+            }            
+        }
+        
+        function build(){
+            allnumbers.forEach((x) =>{
+                addnum(x)
+            })
+        }
+        build()
+    </script>
+     {% endblock %}
+
+
+    </body>
+</html>
