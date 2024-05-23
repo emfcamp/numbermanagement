@@ -149,6 +149,10 @@ def leave_group(request, event, group):
 
 
 class MetricsCollector(Collector):
+    def describe(self) -> Iterable[Metric]:
+        yield GaugeMetricFamily("numbers", "Registered numbers, by event and service", labels=["event", "service"])
+        yield GaugeMetricFamily("users", "Registered users")
+
     def collect(self) -> Iterable[Metric]:
         counts = Number.objects.values("event", "typeofservice").annotate(total=Count('*'))
         g = GaugeMetricFamily("numbers", "Registered numbers, by event and service", labels=["event", "service"])
