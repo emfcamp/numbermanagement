@@ -4,6 +4,7 @@ from . import views
 urlpatterns = [
     path('', views.phonebook, name='phonebook'),
     path('phonebook', views.phonebook, name='phonebook'),
+    path('phonebook/orga', views.orga_phonebook, name='orga-phonebook'),
     path('number', views.my_numbers, name='number-list'),
     path('number/create', views.create_number, name='number-create'),
     path('number/edit/<int:id>/', views.edit_number, name='number-edit'),

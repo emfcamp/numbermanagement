@@ -54,6 +54,10 @@ class Number(models.Model):
     def __str__(self):
         return self.value
 
+    @property
+    def is_orga(self):
+        return self.permissions.filter(value='PhonebookHighlightOrga').exists()
+
 class Range(models.Model):
     start = models.PositiveIntegerField()
     end = models.PositiveIntegerField()
