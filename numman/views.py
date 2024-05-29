@@ -95,7 +95,7 @@ def edit_number(request, id):
     else:
         if request.method == 'GET':
             context = {'form': EditNumberForm(instance=number), 'id': id, 'title': "Edit "+str(id)}
-            return render(request,'form.html',context)
+            return render(request,'numman/edit_number.html',context)
         elif request.method == 'POST':
             form = EditNumberForm(request.POST, instance=number)
             if form.is_valid():
