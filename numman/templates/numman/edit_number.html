@@ -1,12 +1,49 @@
 {% extends 'base.html' %}
-{% load static %}
 
-{% block content %}
-<h2>Edit {{ id }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <p><button type="submit">Update</button></p>
+{%block content_formatted%}
+	<div class="row">
+		<div class="col-12">
+			<h2>{{title}}</h2>
+			<p>{{description |safe}}</p>
+		</div>
+	</div>
 
+	{% if form.errors %}
+		<div class="row">
+			<div class="col-12">
+				<div role="alert">
+					<div id="form_errors">
+						{% for key, value in form.errors.items %}
+							<strong>{{ value }}</strong>
+						{% endfor %}
+					</div>
+					<button type="button" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	{% endif %}
 
-{% endblock %}
+	<div class="row">
+		<div class="col-12">
+			<form method="POST" novalidate>
+				{% csrf_token %}
+
+				{% for field in form.visible_fields %}
+					<div class="col-3 form-label">{{ field.label }}</div>
+					<div class="col-9 form-field">{{ field }}</div>
+				{% endfor %}
+                <div class="col-3 form-label"></div>
+				<div class="col-9 form-field">Fallback number will be called if the call to {{ id }} fails, is busy, or is not answered.</div>
+
+				{% for hidden in form.hidden_fields %}
+					{{ hidden }}
+				{% endfor %}
+				<div class="col-3"></div>
+				<div class="col-9"><button type="submit">Submit</button></div>
+
+			</form>
+		</div>
+	</div>
+{% endblock content_formatted%}

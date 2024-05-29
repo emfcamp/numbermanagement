@@ -19,7 +19,7 @@ def publish(action, number, tos):
 
 @login_required
 def list_groups(request):
-    groups = Group.objects.filter(user=request.user)
+    groups = Group.objects.filter(user=request.user).order_by('value')
     context = {'groups': groups, 'title': "My Groups"}
     return render(request, 'group/listgroups.html', context)
 
