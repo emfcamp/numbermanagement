@@ -157,7 +157,7 @@ def block_user(request):
 @login_required
 @operator_required
 def list_groups(request):
-    groups = Group.objects.values('value')
+    groups = Group.objects.values('value').order_by('value')
     context = {'groups': groups, 'title': "All Groups"}
     return render(request, 'oper/listgroups.html', context)
 
@@ -170,7 +170,7 @@ def manage_group(request, id):
         raise Http404
     else:
         if request.method == 'GET':
-            members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__label", "delay")
+            members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__label", "delay").order_by('member_id')
             joinform = JoinGroupForm(group=group)
             context = {'members': members, 'group': group, 'joinform': joinform, 'title': "Group "+str(id)}
             return render(request, 'oper/managegroup.html', context)
