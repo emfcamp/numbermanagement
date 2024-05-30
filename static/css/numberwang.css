@@ -179,3 +179,7 @@ button:active {
     text-align: center; 
     vertical-align: middle;
 }
+
+.phonebook .number-orga {
+background-color: #a3bd94;
+}

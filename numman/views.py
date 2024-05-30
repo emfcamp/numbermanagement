@@ -16,8 +16,13 @@ TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 def home(request):
     return render(request, 'base.html', {'title': 'Number Management System', 'description':'Welcome to Numberwang!'})
 
+def orga_phonebook(request):
+    publicnumbers = Number.objects.filter(directory=True, permissions__value='PhonebookHighlightOrga').order_by('value').prefetch_related('permissions')
+    context = {'numbers': publicnumbers, 'title': "Orga Phonebook"}
+    return render(request, 'numman/phonebook.html', context)
+
 def phonebook(request):
-    publicnumbers = Number.objects.filter(directory=True).order_by('value')
+    publicnumbers = Number.objects.filter(directory=True).order_by('value').prefetch_related('permissions')
     context = {'numbers': publicnumbers, 'title': "Phonebook"}
     return render(request, 'numman/phonebook.html', context)
 

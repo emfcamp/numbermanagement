@@ -34,7 +34,7 @@
                     <th>Type</th>
                 </tr>
                 {% for number in numbers %}
-                <tr>
+		<tr{% if number.is_orga %} class="number-orga"{% endif %}>
                     <td>{{ number.value }}</td>
                     <td>{{ number.label }}</td>
                     <td>{{ number.typeofservice }}</td>
