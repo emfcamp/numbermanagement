@@ -81,7 +81,7 @@ def create_number(request):
 @login_required
 @operator_required
 def my_numbers(request):
-    numbers = Number.objects.filter()
+    numbers = Number.objects.filter().order_by('value')
     context = {'numbers': numbers, 'title': "Manage all Numbers"}
     return render(request, 'oper/mynumbers.html', context)
 
