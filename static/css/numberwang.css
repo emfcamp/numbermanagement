@@ -183,3 +183,10 @@ button:active {
 .phonebook .number-orga {
 background-color: #dce9d3;
 }
+
+div.alert { margin:1rem;
+            padding: 1rem;
+            border: solid 2px #ff9c33;
+            background-color: #ffdab3;
+        }
+div.alert .title{ font-weight: bold; }
