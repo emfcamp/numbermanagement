@@ -17,12 +17,19 @@ def home(request):
     return render(request, 'base.html', {'title': 'Number Management System', 'description':'Welcome to Numberwang!'})
 
 def orga_phonebook(request):
-    publicnumbers = Number.objects.filter(directory=True, permissions__value='PhonebookHighlightOrga').order_by('value').prefetch_related('permissions')
+    publicnumbers = Number.objects.filter(
+        directory=True, 
+        permissions__value='PhonebookHighlightOrga',
+        event__active=True
+    ).order_by('value').prefetch_related('permissions')
     context = {'numbers': publicnumbers, 'title': "Orga Phonebook"}
     return render(request, 'numman/phonebook.html', context)
 
 def phonebook(request):
-    publicnumbers = Number.objects.filter(directory=True).order_by('value').prefetch_related('permissions')
+    publicnumbers = Number.objects.filter(
+        directory=True,
+        event__active=True
+    ).order_by('event', 'value').prefetch_related('permissions')
     context = {'numbers': publicnumbers, 'title': "Phonebook"}
     return render(request, 'numman/phonebook.html', context)
 
@@ -87,7 +94,7 @@ def create_number(request):
 
 @login_required
 def my_numbers(request):
-    numbers = Number.objects.filter(user=request.user).order_by('value')
+    numbers = Number.objects.filter(user=request.user).order_by('event', 'value')
     context = {'numbers': numbers, 'title': "My Numbers"}
     return render(request, 'numman/mynumbers.html', context)
 
