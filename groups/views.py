@@ -26,14 +26,14 @@ def list_groups(request):
 
 @login_required
 def manage_group(request, id):
-    group = Group.objects.select_related("value").filter(value__user=request.user).filter(value=id).first()
+    group = Group.objects.select_related("value").filter(value__user=request.user).filter(id=id).first()
     if group == None:
         raise Http404
     else:
         if request.method == 'GET':
             members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__label", "delay").order_by('member_id')
             joinform = JoinGroupForm(group=group)
-            context = {'members': members, 'group': group, 'joinform': joinform, 'title': "Group "+str(id)}
+            context = {'members': members, 'group': group, 'joinform': joinform, 'title': "Group: "+ str(group.event)+'/'+str(group.value)}
             return render(request, 'group/managegroup.html', context)
         elif request.method == 'POST':
             joinform = JoinGroupForm(request.POST, group=group)

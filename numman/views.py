@@ -84,7 +84,7 @@ def create_number(request):
             form.save()
             tosGroupObj = TypeOfService.objects.get(name='Group')
             if form.cleaned_data['typeofservice'] == tosGroupObj:
-                n = Number.objects.get(pk=form.cleaned_data['value'])
+                n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
                 Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
             publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
             messages.success(request, 'The number has been created successfully.')
