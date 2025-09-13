@@ -34,7 +34,7 @@ placeholder="Search the phonebook...">
 <th>Number</th>
 <th>Label</th>
 <th>Type</th>
-<th data-sort-method='none'>Modify</th>
+<th data-sort-method='none'>Manage</th>
 </tr>
 {% for number in event.list %}
 <tr>
@@ -43,17 +43,17 @@ placeholder="Search the phonebook...">
 <td><div class="col-12 center">{{ number.typeofservice }}</div></td>
 <td class="inline-menu">
 <div class="col-4 center">
-<a href="/number/info/{{number.value}}" id="{{number.value}}">
+<a href="/number/info/{{number.id}}" id="{{number.id}}">
 <i class="fa-solid fa-gear"></i> Details
 </a>
 </div>
 <div class="col-4 center">
-<a href="/number/edit/{{number.value}}">
+<a href="/number/edit/{{number.id}}">
 <i class="fa-solid fa-pen"></i> Modify
 </a>
 </div>
 <div class="col-4 center">
-<a href="/number/delete/{{number.value}}">
+<a href="/number/delete/{{number.id}}">
 <i class="fa-solid fa-trash"></i> Delete
 </a>
 </div>

@@ -12,7 +12,8 @@ class JoinGroupForm(forms.ModelForm):
         self.group = kwargs.pop('group')
         super (JoinGroupForm,self ).__init__(*args,**kwargs) # populates the post
         inner_qs = Membership.objects.filter(group=self.group).values('member')
-        self.fields['member'].queryset = Number.objects.filter(typeofservice__group_capable=True).filter(event=self.group.event).exclude(value__in=inner_qs).order_by('value')
+        print(inner_qs)
+        self.fields['member'].queryset = Number.objects.filter(typeofservice__group_capable=True).filter(event=self.group.event).exclude(id__in=inner_qs).order_by('value')
         self.fields['delay'].widget = forms.Select(choices=(('0','0 Sec'),('20','20 Sec')))
     
     def clean(self):
