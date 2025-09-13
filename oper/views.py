@@ -81,7 +81,7 @@ def create_number(request):
 @login_required
 @operator_required
 def my_numbers(request):
-    numbers = Number.objects.filter().order_by('value')
+    numbers = Number.objects.filter().order_by('event', 'value')
     context = {'numbers': numbers, 'title': "Manage all Numbers"}
     return render(request, 'oper/mynumbers.html', context)
 
@@ -157,8 +157,10 @@ def block_user(request):
 @login_required
 @operator_required
 def list_groups(request):
-    groups = Group.objects.values('value').order_by('value')
-    context = {'groups': groups, 'title': "All Groups"}
+    groups = Group.objects.all().order_by('event', 'value__value').select_related('value', 'event')
+    context = {
+        'groups': groups,
+    }
     return render(request, 'oper/listgroups.html', context)
 
 

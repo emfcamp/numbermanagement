@@ -1,35 +1,83 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
 <script src="{% static 'js/search.js' %}"></script>
-<input type="text" id="search" onkeyup="searchPhonebook('Numbers')" placeholder="Search numbers...">
+<input type="text" id="search" onkeyup="searchAllTables()" placeholder="Search numbers...">
 <br><br>
 
+{% regroup numbers by event as events_list %}
+{% for event in events_list %}
+<div class="event-section">
+<h3>{{ event.grouper|default:"No Event" }}</h3>
+<table id="Numbers-{{ forloop.counter }}" class="phonebook sortable">
+<tr data-sort-method='none'>
+<th>Number</th>
+<th>Label</th>
+<th>Type</th>
+<th>User</th>
+<th>Actions</th>
+</tr>
+{% for number in event.list %}
+<tr>
+<td>{{ number.value }}</td>
+<td>{{ number.label }}</td>
+<td>{{ number.typeofservice }}</td>
+<td>{{ number.user }}</td>
+<td data-sort-method='none'>
+<a href="number/edit/{{number.value}}"><i class="fa-solid fa-pen"></i>Edit</a> | 
+<a href="number/delete/{{number.value}}"> <i class="fa-solid fa-trash"></i>Delete</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endfor %}
 
-<table id="Numbers" class="phonebook sortable">
-    <tr data-sort-method='none'>
-        <th>Number</th>
-        <th>Label</th>
-        <th>Type</th>
-        <th>User</th>
-        <th>Actions</th>
-      </tr>
-    {% for number in numbers %}
-    <tr>
-      <td>{{ number.value }}</td>
-      <td>{{ number.label }}</td>
-      <td>{{ number.typeofservice }}</td>
-      <td>{{ number.user }}</td>
-      <td data-sort-method='none'>
-        <a href="number/edit/{{number.value}}"><i class="fa-solid fa-pen"></i>Edit</a> | </a>
-        <a href="number/delete/{{number.value}}"> <i class="fa-solid fa-trash"></i>Delete</a> </a>
-      </td>
-    </tr>
+<script>
+// Initialize Tablesort for each table
+{% for event in events_list %}
+new Tablesort(document.getElementById('Numbers-{{ forloop.counter }}'));
+{% endfor %}
+
+// Modified search function to search across all tables
+function searchAllTables() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    {% for event in events_list %}
+    searchTable('Numbers-{{ forloop.counter }}', searchTerm);
     {% endfor %}
+}
 
-  </table> 
-  <script>
-    new Tablesort(document.getElementById('Numbers'));
+function searchTable(tableId, searchTerm) {
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header
+        const row = rows[i];
+        const cells = row.getElementsByTagName('td');
+        let found = false;
+        
+        for (let j = 0; j < cells.length - 1; j++) { // Exclude last column (Actions)
+            if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
+                found = true;
+                break;
+            }
+        }
+        
+        row.style.display = found || searchTerm === '' ? '' : 'none';
+    }
+}
 </script>
+
+<style>
+.event-section {
+    margin-bottom: 2rem;
+}
+
+.event-section h3 {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+</style>
 {% endblock %}
