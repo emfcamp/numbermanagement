@@ -66,18 +66,21 @@ class JoinGroupForm(forms.ModelForm):
         self.group = kwargs.pop('group')
         super (JoinGroupForm,self ).__init__(*args,**kwargs) # populates the post
         inner_qs = Membership.objects.filter(group=self.group).values('member')
-        self.fields['member'].queryset = Number.objects.filter(typeofservice__group_capable=True).order_by('value').exclude(value__in=inner_qs)
+        self.fields['member'].queryset = Number.objects.filter(typeofservice__group_capable=True).order_by('value').filter(event=self.group.event).exclude(id__in=inner_qs)
         self.fields['delay'].widget = forms.Select(choices=(('0','0 Sec'),('20','20 Sec')))
     
     def clean(self):
         super().clean()
         cd = self.cleaned_data
         member = cd.get("member")
-        number = Number.objects.select_related("typeofservice").get(value=member)
+        number = Number.objects.select_related("typeofservice").filter(event=self.group.event).get(value=member)
+        print(number)
         tos = number.typeofservice
         currmembers =  Membership.objects.filter(group=self.group).all()
-        print(len(currmembers))
         exists =  currmembers.filter(member=number).first()
+        if number.event != self.group.event:
+            print("Number/Group event missmatch")
+            raise ValidationError("Number is not for same event as Group")
         if exists:
             print("Number already in Group")
             raise ValidationError("Number already in Group")
