@@ -5,7 +5,7 @@
 		<div class="col-12">
     <h2> Settings for {{number.value}} <span id="eventsub">{{number.event}}</span></h2>
 			<p>{{description}}</p>
-            <p>{{number.value}} is a {{number.typeofservice}} number.</p>
+            <h3>{{number.value}} is a {{number.typeofservice}} number.</h3>
             {% if number.typeofservice.group_capable %}
             <p><b><a href="/group/membership/{{number.id}}"><i class="fa fa-list" aria-hidden="true"></i> Show Group Memberships</a></b></p>
             {% endif %}
