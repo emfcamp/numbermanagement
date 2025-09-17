@@ -14,18 +14,12 @@ class RegisterForm(UserCreationForm):
         fields = ['username','email','password1','password2'] 
 
 class UpdateUserForm(forms.ModelForm):
-    first_name = forms.CharField(max_length=100,
-                               required=True,
-                               widget=forms.TextInput())
-    last_name = forms.CharField(max_length=100,
-                               required=True,
-                               widget=forms.TextInput())
     email = forms.EmailField(required=True,
                              widget=forms.TextInput())
 
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['email']
 
 
 class JambonzForm(forms.Form):
