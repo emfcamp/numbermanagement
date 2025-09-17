@@ -1,24 +1,92 @@
 {% extends 'base.html' %}
-
 {% block content %}
-<form method="POST" novalidate>
-	{% csrf_token %}
-	<h2>Sign Up</h2>
-		
-	{% for field in form %}
-	<p>
-		{% if field.errors %}
-		<ul class="errorlist">
-			{% for error in field.errors %}
-			<li>{{ error }}</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-	 	{{ field.label_tag }} {{ field }}
-	</p>
-	{% endfor %}
-	<p><button type="submit">Register</button></p>
+<form method="POST" novalidate id="registerForm">
+ {% csrf_token %}
+<h2>Sign Up</h2>
+ {% for field in form %}
+<p>
+ {% if field.errors %}
+<ul class="errorlist">
+ {% for error in field.errors %}
+<li>{{ error }}</li>
+ {% endfor %}
+</ul>
+ {% endif %}
+ {{ field.label_tag }} {{ field }}
+</p>
+ {% endfor %}
+ 
+<!-- Error message div for username/email validation -->
+<div id="username-email-error" style="display: none; color: red; margin-bottom: 10px;">
+    <strong>Username cannot be the same as your email address.</strong>
+</div>
 
+<p><button type="submit" id="submitBtn">Register</button></p>
 </form>
 <p>Already signed up but not got the activation email? <a href="/verification/user/verify-email/request-new-link/">Request a new Link</a></p>
-{% endblock content%}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorDiv = document.getElementById('username-email-error');
+    
+    // Get the username and email fields
+    const usernameField = document.querySelector('input[name="username"]');
+    const emailField = document.querySelector('input[name="email"]');
+    
+    function validateUsernameEmail() {
+        const username = usernameField.value.trim().toLowerCase();
+        const email = emailField.value.trim().toLowerCase();
+        
+        // Check if username matches email
+        if (username && email && username === email) {
+            errorDiv.style.display = 'block';
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.6';
+            submitBtn.style.cursor = 'not-allowed';
+            return false;
+        } else {
+            errorDiv.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            submitBtn.style.cursor = 'pointer';
+            return true;
+        }
+    }
+    
+    // Add event listeners for real-time validation
+    usernameField.addEventListener('input', validateUsernameEmail);
+    usernameField.addEventListener('blur', validateUsernameEmail);
+    emailField.addEventListener('input', validateUsernameEmail);
+    emailField.addEventListener('blur', validateUsernameEmail);
+    
+    // Prevent form submission if validation fails
+    form.addEventListener('submit', function(e) {
+        if (!validateUsernameEmail()) {
+            e.preventDefault();
+            alert('Please choose a different username. Username cannot be the same as your email address.');
+            return false;
+        }
+    });
+});
+</script>
+
+<style>
+#submitBtn:disabled {
+    background-color: #ccc !important;
+    border-color: #ccc !important;
+}
+
+.errorlist {
+    color: red;
+    list-style-type: none;
+    padding-left: 0;
+    margin: 5px 0;
+}
+
+.errorlist li {
+    margin: 2px 0;
+}
+</style>
+{% endblock content %}

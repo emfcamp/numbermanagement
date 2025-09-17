@@ -39,7 +39,8 @@ class Permission(models.Model):
         return self.value
     
 class Number(models.Model):
-    value = models.CharField(max_length=4, primary_key=True)
+    id = models.AutoField(primary_key=True) 
+    value = models.CharField(max_length=4)
     label = models.CharField(max_length=32)
     typeofservice = models.ForeignKey(TypeOfService, on_delete=models.CASCADE)
     pub_date = models.DateTimeField("date published", default=timezone.now)
@@ -57,6 +58,11 @@ class Number(models.Model):
     @property
     def is_orga(self):
         return self.permissions.filter(value='PhonebookHighlightOrga').exists()
+    
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['event', 'value'], name='unique_event_value')
+        ]
 
 class Range(models.Model):
     start = models.PositiveIntegerField()

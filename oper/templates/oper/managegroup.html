@@ -2,6 +2,16 @@
 {% load static %}
 
 {% block content %}
+
+<div class="row">
+  <div class="col-12">
+      <h2> Group: {{group.value}} <span id="eventsub">{{group.event}}</span></h2>
+      {% if description %} 
+          <p>{{description}}</p>
+      {% endif %}
+  </div>
+</div>
+
 <table id="Group" class="phonebook">
     <tr>
         <th>Number</th>
@@ -12,10 +22,10 @@
     {% for member in members %}
     <tr>
     <form>
-      <td>{{ member.member_id }}</td>
+      <td>{{ member.member__value }}</td>
       <td>{{ member.member__label }}</td>
       <td>{{ member.delay }}</td>
-      <td><a href="/operator/group/remove/{{group.value}}/{{member.member_id}}"> <i class="fa-solid fa-trash"></i> Remove</a></td>
+      <td><a href="/operator/group/remove/{{group.id}}/{{member.member_id}}"> <i class="fa-solid fa-trash"></i> Remove</a></td>
     </form>
     </tr>
     {% endfor %}

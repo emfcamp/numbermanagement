@@ -9,6 +9,14 @@
 
 h1 { font-size: 2.5rem; }
 h2, h3 { margin-top: 1.5rem;}
+
+#eventsub  {
+    color: #a4a4a5;
+    font-family: 'Raleway', sans-serif;
+    line-height: 1.5;
+    font-size: 0.6em
+}
+
 hr+h3 {margin-top:0;}
 
 p.small { font-size: 0.8rem; }
@@ -190,3 +198,4 @@ div.alert { margin:1rem;
             background-color: #ffdab3;
         }
 div.alert .title{ font-weight: bold; }
+

@@ -1,26 +1,72 @@
 {% extends 'base.html' %}
 {% load static %}
-
 {% block content %}
 <script src="{% static 'js/search.js' %}"></script>
-<input type="text" id="search" onkeyup="searchPhonebook('Groups')" placeholder="Search groups...">
+<input type="text" id="search" onkeyup="searchAllTables()" placeholder="Search groups...">
 <br><br>
 
-<table id="Groups" class="phonebook">
-    <tr>
-        <th>Group Number</th>
-        <th>Actions</th>
-      </tr>
-    {% for group in groups %}
-    <tr>
-      <td>{{ group.value }}</td>
-      <td>
-        <a href="/operator/group/{{group.value}}"" id="{{number.value}}"><i class="fa-solid fa-gear"></i>Manage</a> |  
-        <a href="/operator/number/delete/{{group.value}}"> <i class="fa-solid fa-trash"></i>Delete</a> 
-      </td>
-    </tr>
+{% regroup groups by event as events_list %}
+{% for event in events_list %}
+<div class="event-section">
+<h3>{{ event.grouper|default:"No Event" }}</h3>
+<table id="Groups-{{ forloop.counter }}" class="phonebook">
+<tr>
+<th>Group Number</th>
+<th>Actions</th>
+</tr>
+{% for group in event.list %}
+<tr>
+<td>{{ group.value.value }}</td>
+<td>
+<a href="/operator/group/{{group.id}}" id="{{group.value.value}}"><i class="fa-solid fa-gear"></i>Manage</a> |
+<a href="/operator/group/delete/{{group.id}}"> <i class="fa-solid fa-trash"></i>Delete</a>
+</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endfor %}
+
+<script>
+// Modified search function to search across all tables
+function searchAllTables() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    {% for event in events_list %}
+    searchTable('Groups-{{ forloop.counter }}', searchTerm);
     {% endfor %}
+}
 
-  </table> 
+function searchTable(tableId, searchTerm) {
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header
+        const row = rows[i];
+        const cells = row.getElementsByTagName('td');
+        let found = false;
+        
+        for (let j = 0; j < cells.length - 1; j++) { // Exclude last column (Actions)
+            if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
+                found = true;
+                break;
+            }
+        }
+        
+        row.style.display = found || searchTerm === '' ? '' : 'none';
+    }
+}
+</script>
 
-{% endblock %}
+<style>
+.event-section {
+    margin-bottom: 2rem;
+}
+
+.event-section h3 {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock content %}

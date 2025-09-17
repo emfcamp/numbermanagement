@@ -25,15 +25,30 @@ def list_groups(request):
 
 
 @login_required
+def lookup_group(request, eventvalue):
+    event = eventvalue.split("-")[0]
+    value = eventvalue.split("-")[1]
+    group = Group.objects.select_related("value").filter(
+        value__user=request.user,
+        value__value=value,  # Filter by the Number's value field
+        event_id=event      # Also filter by event to ensure uniqueness
+    ).first()
+    print(group)
+    if group == None:
+        raise Http404
+    else:
+        return redirect('/group/'+str(group))
+
+@login_required
 def manage_group(request, id):
-    group = Group.objects.select_related("value").filter(value__user=request.user).filter(value=id).first()
+    group = Group.objects.select_related("value").filter(value__user=request.user).filter(id=id).first()
     if group == None:
         raise Http404
     else:
         if request.method == 'GET':
-            members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__label", "delay").order_by('member_id')
+            members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__label", "member__value", "delay").order_by('member_id')
             joinform = JoinGroupForm(group=group)
-            context = {'members': members, 'group': group, 'joinform': joinform, 'title': "Group "+str(id)}
+            context = {'members': members, 'group': group, 'joinform': joinform}
             return render(request, 'group/managegroup.html', context)
         elif request.method == 'POST':
             joinform = JoinGroupForm(request.POST, group=group)
@@ -47,7 +62,7 @@ def manage_group(request, id):
 
 @login_required
 def leave_group(request, gid, mid):
-    group = Group.objects.select_related("value").filter(value__user=request.user).filter(value=gid).first() 
+    group = Group.objects.select_related("value").filter(value__user=request.user).filter(id=gid).first() 
     if group == None:
         raise Http404
     member = Membership.objects.get(group=gid, member=mid)

@@ -71,7 +71,7 @@ def create_number(request):
             form.save()
             tosGroupObj = TypeOfService.objects.get(name='Group')
             if form.cleaned_data['typeofservice'] == tosGroupObj:
-                n = Number.objects.get(pk=form.cleaned_data['value'])
+                n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
                 Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
             publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
             return redirect('/operator/number')
@@ -81,7 +81,7 @@ def create_number(request):
 @login_required
 @operator_required
 def my_numbers(request):
-    numbers = Number.objects.filter().order_by('value')
+    numbers = Number.objects.filter().order_by('event', 'value')
     context = {'numbers': numbers, 'title': "Manage all Numbers"}
     return render(request, 'oper/mynumbers.html', context)
 
@@ -89,7 +89,7 @@ def my_numbers(request):
 @login_required
 @operator_required
 def edit_number(request, id):
-    number = Number.objects.filter(value=id).first()
+    number = Number.objects.filter(id=id).first()
     if number == None:
         raise Http404
     else:
@@ -110,21 +110,19 @@ def edit_number(request, id):
 @login_required
 @operator_required
 def delete_number(request, id):
-    number = Number.objects.filter(value=id).first()
+    number = Number.objects.filter(id=id).first()
     if number == None:
         raise Http404
     else:
         if request.method == 'GET':
-            context = {'form': DeleteNumberForm(), 'id': id, 'title' : "Delete "+str(id)}
+            context = {'form': DeleteNumberForm(), 'id': id, 'title' : "Delete "+str(number.value)}
             return render(request,'form.html', context)
         elif request.method == 'POST':
             form = DeleteNumberForm(request.POST)
             if form.is_valid():
                 data = form.cleaned_data
-                print(data['checknumber'])
-                print(id)
-                if int(data['checknumber']) == int(id):
-                    number = Number.objects.get(value=id)
+                if int(number.value) == int(data['checknumber']):
+                    number = Number.objects.get(id=id)
                     number.delete()
                     publish('remove', id, number.typeofservice )
                     messages.success(request, 'The number has been deleted.')
@@ -157,22 +155,24 @@ def block_user(request):
 @login_required
 @operator_required
 def list_groups(request):
-    groups = Group.objects.values('value').order_by('value')
-    context = {'groups': groups, 'title': "All Groups"}
+    groups = Group.objects.all().order_by('event', 'value__value').select_related('value', 'event')
+    context = {
+        'groups': groups,
+    }
     return render(request, 'oper/listgroups.html', context)
 
 
 @login_required
 @operator_required
 def manage_group(request, id):
-    group = Group.objects.select_related("value").filter(value=id).first()
+    group = Group.objects.select_related("value").filter(id=id).first()
     if group == None:
         raise Http404
     else:
         if request.method == 'GET':
-            members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__label", "delay").order_by('member_id')
+            members = Membership.objects.select_related("member").filter(group=group).values("member_id", "member__value", "member__label", "delay").order_by('member_id')
             joinform = JoinGroupForm(group=group)
-            context = {'members': members, 'group': group, 'joinform': joinform, 'title': "Group "+str(id)}
+            context = {'members': members, 'group': group, 'joinform': joinform}
             return render(request, 'oper/managegroup.html', context)
         elif request.method == 'POST':
             joinform = JoinGroupForm(request.POST, group=group)
@@ -187,7 +187,7 @@ def manage_group(request, id):
 @login_required
 @operator_required
 def leave_group(request, gid, mid):
-    group = Group.objects.select_related("value").filter(value=gid).first() 
+    group = Group.objects.select_related("value").filter(id=gid).first() 
     if group == None:
         raise Http404
     member = Membership.objects.get(group=gid, member=mid)

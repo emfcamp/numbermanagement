@@ -1,31 +1,109 @@
 {% extends 'base.html' %}
-
 {%block content_formatted%}
-	<div class="row">
-		<div class="col-12">
-			<h2>Login</h2>
-			<p><a href="/register">Register a New Account</a></p>
-		</div>
-		<div class="col-12">
-			<form method="POST" novalidate>
-				{% csrf_token %}
+<div class="row">
+<div class="col-12">
+<h2>Login</h2>
+<p><a href="/register">Register a New Account</a></p>
+</div>
+<div class="col-12">
+<form method="POST" novalidate id="loginForm">
+ {% csrf_token %}
+ {% for field in form.visible_fields %}
+<div class="col-3 form-label">{{ field.label }}</div>
+<div class="col-9 form-field">
+    {{ field }}
+    {% if field.name == 'username' %}
+    <!-- Warning message for email detection -->
+    <div id="email-warning" style="display: none; color: #ff6600; margin-top: 5px; font-size: 0.9em;">
+        <strong>⚠️ It looks like you entered an email address. Please use your username instead.</strong>
+    </div>
+    {% endif %}
+</div>
+ {% endfor %}
+ {% for hidden in form.hidden_fields %}
+ {{ hidden }}
+ {% endfor %}
+<div class="col-3"></div>
+<div class="col-9"><button type="submit" id="loginBtn">Login</button></div>
+<div class="col-3"></div>
+<div class="col-9">
+<p><a href="{% url 'password_reset' %}">Forgot Username or Password?</a></p>
+</div>
+</form>
+</div>
+</div>
 
-				{% for field in form.visible_fields %}
-					<div class="col-3 form-label">{{ field.label }}</div>
-					<div class="col-9 form-field">{{ field }}</div>
-				{% endfor %}
-			
-				{% for hidden in form.hidden_fields %}
-					{{ hidden }}
-				{% endfor %}
-				<div class="col-3"></div>
-				<div class="col-9"><button type="submit">Login</button></div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const warningDiv = document.getElementById('email-warning');
+    
+    // Get the username field (assuming it's named 'username')
+    const usernameField = document.querySelector('input[name="username"]');
+    
+    function isValidEmail(email) {
+        // Simple email regex pattern
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
+    }
+    
+    function checkForEmail() {
+        const usernameValue = usernameField.value.trim();
+        
+        if (usernameValue && isValidEmail(usernameValue)) {
+            // Show warning but don't prevent login (some systems allow email login)
+            warningDiv.style.display = 'block';
+            
+            // Optional: Add visual styling to indicate potential issue
+            usernameField.style.borderColor = '#ff6600';
+            usernameField.style.backgroundColor = '#fff3e0';
+        } else {
+            // Hide warning and reset styling
+            warningDiv.style.display = 'none';
+            usernameField.style.borderColor = '';
+            usernameField.style.backgroundColor = '';
+        }
+    }
+    
+    // Add event listeners for real-time validation
+    if (usernameField) {
+        usernameField.addEventListener('input', checkForEmail);
+        usernameField.addEventListener('blur', checkForEmail);
+    }
+    
+    // Optional: Show confirmation dialog if user tries to submit with email
+    form.addEventListener('submit', function(e) {
+        const usernameValue = usernameField.value.trim();
+        
+        if (usernameValue && isValidEmail(usernameValue)) {
+            const confirmSubmit = confirm(
+                'It looks like you entered an email address instead of a username.\n\n' +
+                'Are you sure you want to continue?\n\n' +
+                'Click "Cancel" to change it to your username, or "OK" to proceed.'
+            );
+            
+            if (!confirmSubmit) {
+                e.preventDefault();
+                usernameField.focus();
+                return false;
+            }
+        }
+    });
+});
+</script>
 
-				<div class="col-3"></div>
-				<div class="col-9">
-					<p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
-				</div>
-			</form>
-		</div>
-	</div>
+<style>
+#email-warning {
+    border-left: 3px solid #ff6600;
+    padding-left: 8px;
+    background-color: #fff8f0;
+    padding: 5px 8px;
+    border-radius: 3px;
+}
+
+input[name="username"]:focus {
+    outline: none;
+}
+</style>
 {% endblock content_formatted%}

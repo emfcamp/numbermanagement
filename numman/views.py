@@ -17,12 +17,19 @@ def home(request):
     return render(request, 'base.html', {'title': 'Number Management System', 'description':'Welcome to Numberwang!'})
 
 def orga_phonebook(request):
-    publicnumbers = Number.objects.filter(directory=True, permissions__value='PhonebookHighlightOrga').order_by('value').prefetch_related('permissions')
+    publicnumbers = Number.objects.filter(
+        directory=True, 
+        permissions__value='PhonebookHighlightOrga',
+        event__active=True
+    ).order_by('value').prefetch_related('permissions')
     context = {'numbers': publicnumbers, 'title': "Orga Phonebook"}
     return render(request, 'numman/phonebook.html', context)
 
 def phonebook(request):
-    publicnumbers = Number.objects.filter(directory=True).order_by('value').prefetch_related('permissions')
+    publicnumbers = Number.objects.filter(
+        directory=True,
+        event__active=True
+    ).order_by('event', 'value').prefetch_related('permissions')
     context = {'numbers': publicnumbers, 'title': "Phonebook"}
     return render(request, 'numman/phonebook.html', context)
 
@@ -77,7 +84,7 @@ def create_number(request):
             form.save()
             tosGroupObj = TypeOfService.objects.get(name='Group')
             if form.cleaned_data['typeofservice'] == tosGroupObj:
-                n = Number.objects.get(pk=form.cleaned_data['value'])
+                n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
                 Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
             publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
             messages.success(request, 'The number has been created successfully.')
@@ -87,19 +94,19 @@ def create_number(request):
 
 @login_required
 def my_numbers(request):
-    numbers = Number.objects.filter(user=request.user).order_by('value')
+    numbers = Number.objects.filter(user=request.user).order_by('event', 'value')
     context = {'numbers': numbers, 'title': "My Numbers"}
     return render(request, 'numman/mynumbers.html', context)
 
 
 @login_required
 def edit_number(request, id):
-    number = Number.objects.filter(user=request.user).filter(value=id).first()
+    number = Number.objects.filter(user=request.user).filter(id=id).first()
     if number == None:
         raise Http404
     else:
         if request.method == 'GET':
-            context = {'form': EditNumberForm(instance=number), 'id': id, 'title': "Edit "+str(id)}
+            context = {'form': EditNumberForm(instance=number), 'id': id, 'number' : number, 'title': "Edit "+str(number.value)}
             return render(request,'numman/edit_number.html',context)
         elif request.method == 'POST':
             form = EditNumberForm(request.POST, instance=number)
@@ -110,16 +117,16 @@ def edit_number(request, id):
                 return redirect('/number')
             else:
                 messages.error(request, 'Please correct the following errors:')
-                return render(request,'numman/edit_number.html',{'form':form, 'id': id, 'title': "Edit "+str(id)})
+                return render(request,'numman/edit_number.html',{'form':form, 'id': id, 'title': "Edit "+str(number.value)})
 
 @login_required
 def delete_number(request, id):
-    number = Number.objects.filter(user=request.user).filter(value=id).first()
+    number = Number.objects.filter(user=request.user).filter(id=id).first()
     if number == None:
         raise Http404
     else:
         if request.method == 'GET':
-            context = {'form': DeleteNumberForm(), 'id': id, 'title': "Delete "+str(id)}
+            context = {'form': DeleteNumberForm(), 'id': id, 'title': "Delete "+str(number.value)}
             return render(request,'form.html', context)
         elif request.method == 'POST':
             form = DeleteNumberForm(request.POST)
@@ -128,7 +135,7 @@ def delete_number(request, id):
                 print(data['checknumber'])
                 print(id)
                 if int(data['checknumber']) == int(id):
-                    number = Number.objects.get(value=id)
+                    number = Number.objects.get(id=id)
                     number.delete()
                     publish('remove', id, number.typeofservice )
                     messages.success(request, 'The number has been deleted.')
@@ -140,7 +147,7 @@ def delete_number(request, id):
 
 @login_required
 def number_info(request, id):
-    number = Number.objects.filter(user=request.user).filter(value=id).first()
+    number = Number.objects.filter(user=request.user).filter(id=id).first()
     if number == None:
         raise Http404
     ins_file = "service_instructions/"+number.typeofservice_id+".html"
@@ -149,11 +156,12 @@ def number_info(request, id):
     else:
         instructions = "service_instructions/_DEFAULT.html"
     print(instructions)
-    context = {'number': number, 'title': 'Settings for '+str(id), 'instructions' : instructions}
+    context = {'number': number, 'title': 'Settings for '+str(number.value), 'instructions' : instructions}
     return render(request, 'numman/numberinfo.html', context)
 
-def available_numbers(request):
-    takennumbers =  Number.objects.values('value')
+def available_numbers(request, name):
+    event = Event.objects.filter(name=name).first()
+    takennumbers =  Number.objects.values('value').filter(event=event)
     numberlist = [o['value'] for o in list(takennumbers)]
     context = {'takennumbers': numberlist, 'rangedata': getRanges(), 'title': "Available Numbers"}
     return render(request, 'numman/availible_numbers.html', context)

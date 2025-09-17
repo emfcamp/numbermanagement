@@ -4,11 +4,7 @@
 {% block content_formatted %}
 <div class="row">
     <div class="col-12">
-        <h2>
-        {% if title %} 
-            {{title}}
-        {% endif %}
-        </h2>
+        <h2> Group: {{group.value}} <span id="eventsub">{{group.event}}</span></h2>
 
         {% if description %} 
             <p>{{description}}</p>
@@ -42,10 +38,10 @@
             {% for member in members %}
             <tr>
 
-                <td>{{ member.member_id }}</td>
+                <td>{{ member.member__value }}</td>
                 <td>{{ member.member__label }}</td>
                 <td>{{ member.delay }}</td>
-                <td><a href="/group/remove/{{group.value}}/{{member.member_id}}"> <i class="fa-solid fa-trash"></i> Remove</a></td>
+                <td><a href="/group/remove/{{group.id}}/{{member.member_id}}"> <i class="fa-solid fa-trash"></i> Remove</a></td>
             </tr>
             {% endfor %}
         </table> 
