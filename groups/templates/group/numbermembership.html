@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% if memberships %}
+<div >
+<h2>Group membership for {{number.value}} <span id="eventsub">{{number.event}}</span></h2>
+</div>
+<script src="{% static 'js/search.js' %}"></script>
+<input type="text" id="search" onkeyup="searchPhonebook('Groups')" placeholder="Search my groups...">
+<br><br>
+
+<table id="Groups" class="phonebook">
+    <tr>
+        <th>Group Number</th>
+        <th>Group Label</th>
+        <th>Ring Delay</th>
+
+      </tr>
+    {% for member in memberships %}
+    <tr>
+      <td>{{ member.group.value }}</td>
+      <td>{{ member.group.value.label }}</td>
+      <td>{{ member.delay }}</td>
+
+    </tr>
+    {% endfor %}
+
+  </table> 
+{% else %}
+<div >
+<h2>{{number.value}} <span id="eventsub">{{number.event}}</span> <br>Is not a member of any groups</h2>
+</div>
+{% endif %}
+
+{% endblock %}

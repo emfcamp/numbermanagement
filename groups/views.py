@@ -70,3 +70,10 @@ def leave_group(request, gid, mid):
     publish('updategroup', gid, 'Group')
     messages.success(request, str(mid)+' removed from Group: '+str(gid))
     return redirect('/group/'+str(gid))
+
+@login_required
+def number_membership(request, id):
+    number = Number.objects.filter(id=id).filter(user=request.user).first()
+    memberships = Membership.objects.filter(member=number).select_related('group', 'group__user', 'group__event')
+    context = {'memberships': memberships, 'number': number}
+    return render(request, 'group/numbermembership.html', context)
