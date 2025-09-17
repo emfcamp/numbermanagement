@@ -71,7 +71,7 @@ def create_number(request):
             form.save()
             tosGroupObj = TypeOfService.objects.get(name='Group')
             if form.cleaned_data['typeofservice'] == tosGroupObj:
-                n = Number.objects.get(pk=form.cleaned_data['value'])
+                n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
                 Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
             publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
             return redirect('/operator/number')
@@ -89,7 +89,7 @@ def my_numbers(request):
 @login_required
 @operator_required
 def edit_number(request, id):
-    number = Number.objects.filter(value=id).first()
+    number = Number.objects.filter(id=id).first()
     if number == None:
         raise Http404
     else:
@@ -110,21 +110,19 @@ def edit_number(request, id):
 @login_required
 @operator_required
 def delete_number(request, id):
-    number = Number.objects.filter(value=id).first()
+    number = Number.objects.filter(id=id).first()
     if number == None:
         raise Http404
     else:
         if request.method == 'GET':
-            context = {'form': DeleteNumberForm(), 'id': id, 'title' : "Delete "+str(id)}
+            context = {'form': DeleteNumberForm(), 'id': id, 'title' : "Delete "+str(number.value)}
             return render(request,'form.html', context)
         elif request.method == 'POST':
             form = DeleteNumberForm(request.POST)
             if form.is_valid():
                 data = form.cleaned_data
-                print(data['checknumber'])
-                print(id)
-                if int(data['checknumber']) == int(id):
-                    number = Number.objects.get(value=id)
+                if int(number.value) == int(data['checknumber']):
+                    number = Number.objects.get(id=id)
                     number.delete()
                     publish('remove', id, number.typeofservice )
                     messages.success(request, 'The number has been deleted.')
