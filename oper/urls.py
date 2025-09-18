@@ -10,5 +10,6 @@ urlpatterns = [
     path('operator/user/block', views.block_user, name='user-block'),
     path('operator/groups', views.list_groups, name='list-group'),
     path('operator/group/<int:id>', views.manage_group, name='manage-group'),
-    path('operator/group/remove/<int:gid>/<int:mid>', views.leave_group, name='leave-group')
+    path('operator/group/remove/<int:gid>/<int:mid>', views.leave_group, name='leave-group'),
+    path('operator/reservations', views.list_reservations, name='list-reservations')
 ]

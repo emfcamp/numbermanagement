@@ -1,19 +1,25 @@
 from typing import Any, Mapping
 from django.core.files.base import File
-from django.db.models.base import Model
+from django.db.models.base import Model, Q
 from django import forms
 from django.forms.utils import ErrorList
-from numman.models import Number, Event, TypeOfService, Range
+from numman.models import Number, Event, TypeOfService, Range, Reservation
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from groups.models import Membership
 from django.core.exceptions import ValidationError
 from numman.models import Number
-
+from django.utils import timezone
 
 class CreateNumberForm(forms.ModelForm):
-    def __init__(self,*args,**kwargs):
-        super (CreateNumberForm,self ).__init__(*args,**kwargs) # populates the post
+    ignore_reservation = forms.BooleanField(
+        required=False, 
+        label="Override existing reservation",
+        help_text="Check this box to use a number that's reserved by another user"
+    )
+    
+    def __init__(self, *args, **kwargs):
+        super(CreateNumberForm, self).__init__(*args, **kwargs)
         self.fields['event'].queryset = Event.objects.filter()
         self.fields['typeofservice'].queryset = TypeOfService.objects.filter()
         self.fields['param'].label = " "
@@ -21,24 +27,44 @@ class CreateNumberForm(forms.ModelForm):
         self.fields['value'].label = "Number"
         self.fields['label'].label = "Description"
         self.fields['typeofservice'].label = "Type of Service"
-
+    
     def clean(self):
         super().clean()
         cd = self.cleaned_data
         number = int(cd.get("value"))
+        user = cd.get("user")
+        ignore_reservation = cd.get("ignore_reservation", False)
         valid = False
         ranges = Range.objects.filter()
+        
+        # Only check for reservations if ignore_reservation is False
+        if not ignore_reservation:
+            active_reservation = Reservation.objects.filter(
+                value=number
+            ).filter(
+                Q(expiry__isnull=True) | Q(expiry__gt=timezone.now())
+            ).exclude(user=user).select_related('user').first()
+            if active_reservation:
+                username = active_reservation.user.username
+                if active_reservation.expiry:
+                    expiry_str = active_reservation.expiry.strftime('%Y-%m-%d %H:%M')
+                    error_msg = f"Sorry, this number is reserved by {username} until {expiry_str}"
+                else:
+                    error_msg = f"Sorry, this number is permanently reserved by {username}"
+                raise ValidationError(error_msg)
+        # Range validation still applies regardless
         for r in ranges:
             if r.start <= number <= r.end:
                 valid = True
+        
         if not valid:
             raise ValidationError("Number not in Valid Range")
+        
         return cd
-
+    
     class Meta:
         model = Number
         fields = ['event', 'typeofservice', 'value', 'user', 'label', 'directory', 'permissions', 'param', 'barred']
-
 
 class EditNumberForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):

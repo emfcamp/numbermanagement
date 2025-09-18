@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from .forms import CreateNumberForm, EditNumberForm, DeleteNumberForm
 from django.contrib.auth.models import User
-from .models import  Event, Number, TypeOfService, Range
+from .models import  Event, Number, TypeOfService, Range, Reservation
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.conf import settings
@@ -132,9 +132,7 @@ def delete_number(request, id):
             form = DeleteNumberForm(request.POST)
             if form.is_valid():
                 data = form.cleaned_data
-                print(data['checknumber'])
-                print(id)
-                if int(data['checknumber']) == int(id):
+                if int(number.value) == int(data['checknumber']):
                     number = Number.objects.get(id=id)
                     number.delete()
                     publish('remove', id, number.typeofservice )

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<script src="{% static 'js/search.js' %}"></script>
+<input type="text" id="search" onkeyup="searchAllTables()" placeholder="Search reservations...">
+<br><br>
+
+<table id="Reservations" class="phonebook sortable">
+<tr data-sort-method='none'>
+<th>Number</th>
+<th>User</th>
+<th>Expiry</th>
+
+</tr>
+{% for reservation in reservations %}
+<tr>
+<td>{{ reservation.value }}</td>
+<td>{{ reservation.user }}</td>
+<td>{{ reservation.expiry }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<script>
+// Modified search function to search across all tables
+function searchAllTables() {
+    const searchTerm = document.getElementById('search').value.toLowerCase();
+    {% for event in events_list %}
+    searchTable('Numbers-{{ forloop.counter }}', searchTerm);
+    {% endfor %}
+}
+
+function searchTable(tableId, searchTerm) {
+    const table = document.getElementById(tableId);
+    const rows = table.getElementsByTagName('tr');
+    
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header
+        const row = rows[i];
+        const cells = row.getElementsByTagName('td');
+        let found = false;
+        
+        for (let j = 0; j < cells.length - 1; j++) { // Exclude last column (Actions)
+            if (cells[j].textContent.toLowerCase().includes(searchTerm)) {
+                found = true;
+                break;
+            }
+        }
+        
+        row.style.display = found || searchTerm === '' ? '' : 'none';
+    }
+}
+</script>
+
+<style>
+.event-section {
+    margin-bottom: 2rem;
+}
+
+.event-section h3 {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+</style>
+{% endblock %}

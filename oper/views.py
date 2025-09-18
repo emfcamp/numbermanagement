@@ -3,13 +3,14 @@ from django.http import HttpResponse, Http404
 from .forms import CreateNumberForm, EditNumberForm, DeleteNumberForm, BlockUserForm, JoinGroupForm
 from django.contrib.auth.models import User
 from users.models import Operator
-from numman.models import  Event, Number, TypeOfService, Range
+from numman.models import  Event, Number, TypeOfService, Range, Reservation
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 import requests
 from groups.models import Group, Membership
+from django.utils import timezone
 
 def getTOSData():
     data =  list(TypeOfService.objects.filter().values())
@@ -195,3 +196,11 @@ def leave_group(request, gid, mid):
     publish('updategroup', gid, 'Group')
     messages.success(request, str(mid)+' removed from Group: '+str(gid))
     return redirect('/operator/group/'+str(gid))
+
+
+@login_required
+@operator_required
+def list_reservations(request):
+    reservations = Reservation.objects.all()
+    context = {'reservations': reservations, 'title': "Reservations"}
+    return render(request, 'oper/reservations.html', context)

@@ -72,3 +72,14 @@ class Range(models.Model):
     def __str__(self):
         return str(self.start)+"-"+str(self.end)
 
+class Reservation(models.Model):
+    value = models.CharField(max_length=4)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    expiry = models.DateTimeField(help_text="Reservation expiry date and time")
+
+    def __str__(self):
+        return self.value
+    
+    def is_expired(self):
+        """Check if the reservation has expired"""
+        return timezone.now() > self.expiry

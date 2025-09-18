@@ -1,10 +1,11 @@
 from typing import Any, Mapping
 from django.core.files.base import File
-from django.db.models.base import Model
+from django.db.models.base import Model, Q
 from django import forms
 from django.forms.utils import ErrorList
-from .models import Number, Event, TypeOfService, Range
+from .models import Number, Event, TypeOfService, Range, Reservation
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 class CreateNumberForm(forms.ModelForm):
     def __init__(self,*args,**kwargs):
@@ -21,8 +22,16 @@ class CreateNumberForm(forms.ModelForm):
         super().clean()
         cd = self.cleaned_data
         number = int(cd.get("value"))
+        user = getattr(self.instance, 'user', None)
         valid = False
         ranges = Range.objects.filter(privileged=False)
+        active_reservation = Reservation.objects.filter(
+            value=number
+        ).filter(
+            Q(expiry__isnull=True) | Q(expiry__gt=timezone.now())
+        ).exclude(user=user).first()
+        if  active_reservation:
+            raise ValidationError("Sorry this number is reserved by another user")
         for r in ranges:
             if r.start <= number <= r.end:
                 valid = True
