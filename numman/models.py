@@ -83,3 +83,10 @@ class Reservation(models.Model):
     def is_expired(self):
         """Check if the reservation has expired"""
         return timezone.now() > self.expiry
+    
+    @classmethod
+    def cleanup_expired(cls):
+        """Remove all expired reservations"""
+        expired_count = cls.objects.filter(expiry__lt=timezone.now()).count()
+        cls.objects.filter(expiry__lt=timezone.now()).delete()
+        return expired_count

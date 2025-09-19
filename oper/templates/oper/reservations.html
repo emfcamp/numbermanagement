@@ -2,8 +2,11 @@
 {% load static %}
 {% block content %}
 <script src="{% static 'js/search.js' %}"></script>
-<input type="text" id="search" onkeyup="searchAllTables()" placeholder="Search reservations...">
-<br><br>
+
+<div class="col-9"> <input type="text" id="search" onkeyup="searchAllTables()" placeholder="Search reservations..."></div>
+<div class="col-3"><a href="/operator/reservations/cleanup" class="btn btn-primary" role="button">
+        Cleanup Expired
+    </a></div>
 
 <table id="Reservations" class="phonebook sortable">
 <tr data-sort-method='none'>
@@ -16,7 +19,7 @@
 <tr>
 <td>{{ reservation.value }}</td>
 <td>{{ reservation.user }}</td>
-<td>{{ reservation.expiry }}</td>
+<td>{{ reservation.expiry }} UTC</td>
 </tr>
 {% endfor %}
 </table>

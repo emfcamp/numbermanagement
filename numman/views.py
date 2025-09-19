@@ -9,6 +9,8 @@ from django.conf import settings
 import requests
 from groups.models import Group
 import os.path 
+from django.utils import timezone
+from datetime import timedelta
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
@@ -135,6 +137,12 @@ def delete_number(request, id):
                 if int(number.value) == int(data['checknumber']):
                     number = Number.objects.get(id=id)
                     number.delete()
+                    # Create reservation with 30-minute expiry
+                    Reservation.objects.create(
+                        value=number.value,  # or whatever number value
+                        user=request.user,  # or the specific user
+                        expiry=timezone.now() + timedelta(minutes=30)
+                    )
                     publish('remove', id, number.typeofservice )
                     messages.success(request, 'The number has been deleted.')
                 else:

@@ -125,6 +125,12 @@ def delete_number(request, id):
                 if int(number.value) == int(data['checknumber']):
                     number = Number.objects.get(id=id)
                     number.delete()
+                    # Create reservation with 30-minute expiry
+                    Reservation.objects.create(
+                        value=number.value,  # or whatever number value
+                        user=request.user,  # or the specific user
+                        expiry=timezone.now() + timedelta(minutes=30)
+                    )
                     publish('remove', id, number.typeofservice )
                     messages.success(request, 'The number has been deleted.')
                 else:
@@ -204,3 +210,12 @@ def list_reservations(request):
     reservations = Reservation.objects.all()
     context = {'reservations': reservations, 'title': "Reservations"}
     return render(request, 'oper/reservations.html', context)
+
+
+@login_required
+@operator_required
+def cleanup_expired(request):
+    deleted_count = Reservation.cleanup_expired()
+    print(f"Removed {deleted_count} expired reservations")
+    messages.success(request, f"Removed {deleted_count} expired reservations")
+    return redirect('/operator/reservations')

@@ -10,6 +10,8 @@ from groups.models import Membership
 from django.core.exceptions import ValidationError
 from numman.models import Number
 from django.utils import timezone
+from django.utils import timezone
+from datetime import timedelta
 
 class CreateNumberForm(forms.ModelForm):
     ignore_reservation = forms.BooleanField(
@@ -48,9 +50,9 @@ class CreateNumberForm(forms.ModelForm):
                 username = active_reservation.user.username
                 if active_reservation.expiry:
                     expiry_str = active_reservation.expiry.strftime('%Y-%m-%d %H:%M')
-                    error_msg = f"Sorry, this number is reserved by {username} until {expiry_str}"
+                    error_msg = f"Sorry, this number is reserved for {username} until {expiry_str} UTC"
                 else:
-                    error_msg = f"Sorry, this number is permanently reserved by {username}"
+                    error_msg = f"Sorry, this number is permanently reserved for {username}"
                 raise ValidationError(error_msg)
         # Range validation still applies regardless
         for r in ranges:
