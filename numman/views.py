@@ -11,6 +11,7 @@ from groups.models import Group
 import os.path 
 from django.utils import timezone
 from datetime import timedelta
+from django.http import JsonResponse
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
@@ -71,19 +72,36 @@ def publish(action, number, tos):
 
     
 
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.http import JsonResponse
 
 @login_required
 def create_number(request):
     if request.method == 'GET':
         first_event = Event.objects.filter(active=True)[0]
         form = CreateNumberForm(initial={'event': first_event})
-        context = {'form': form, 'tosdata': getTOSData(), 'ranges': getRanges(), 'userdata' : {"username": request.user.username}, 'title': "Create new Number"}
+        context = {
+            'form': form, 
+            'tosdata': getTOSData(), 
+            'ranges': getRanges(), 
+            'userdata': {"username": request.user.username}, 
+            'title': "Create new Number"
+        }
         return render(request, 'numman/create_number.html', context)
+    
     elif request.method == 'POST':
         form = CreateNumberForm(request.POST)
-        form.instance.user  = request.user
+        form.instance.user = request.user
+        
         if form.is_valid():
+            # Get user data and store it as JSON
+            user_data_json = form.get_user_data()
+            if user_data_json:
+                form.instance.user_data = user_data_json
             form.save()
+            # Your existing logic for Group creation
             tosGroupObj = TypeOfService.objects.get(name='Group')
             if form.cleaned_data['typeofservice'] == tosGroupObj:
                 n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
@@ -92,7 +110,33 @@ def create_number(request):
             messages.success(request, 'The number has been created successfully.')
             return redirect('/number')
         else:
-            return render(request, 'numman/create_number.html', {'form': form, 'tosdata': getTOSData(), 'ranges': getRanges(), 'userdata' : {"username": request.user.username}, 'title': "Create new Number"})
+            context = {
+                'form': form,
+                'errors': True,
+                'tosdata': getTOSData(), 
+                'ranges': getRanges(), 
+                'userdata': {"username": request.user.username}, 
+                'title': "Create new Number"
+            }
+            return render(request, 'numman/create_number.html', context)
+
+# Add this new view to handle AJAX requests for dynamic fields
+@login_required
+def get_typeofservice_schema(request):
+    """Return the user_data_schema for a given typeofservice"""
+    if request.method == 'GET' and 'typeofservice_id' in request.GET:
+        try:
+            typeofservice_name = request.GET['typeofservice_id']
+            
+            # Since name is the primary key, query by name
+            typeofservice = TypeOfService.objects.get(name=typeofservice_name)
+            schema = typeofservice.user_data_schema if typeofservice.user_data_schema else '{}'
+            return JsonResponse({'schema': schema})
+        except TypeOfService.DoesNotExist:
+            return JsonResponse({'schema': '{}'})
+        except Exception as e:
+            return JsonResponse({'error': f'Error retrieving schema: {str(e)}'})
+    return JsonResponse({'error': 'Invalid request'})
 
 @login_required
 def my_numbers(request):

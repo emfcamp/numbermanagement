@@ -1,37 +1,258 @@
 {% extends 'base.html' %}
 {% load static %}
-
-
 {% block content %}
 {{ tosdata|json_script:"tosdata" }}
 {{ ranges|json_script:"ranges" }}
 {{ userdata|json_script:"userdata"}}
 
-    {% if form.non_field_errors %}
-    <div class="alert alert-danger" role="alert">
-      {% for error in form.non_field_errors %}
+{% if form.non_field_errors %}
+<div class="alert alert-danger" role="alert">
+    {% for error in form.non_field_errors %}
         {{ error }}
-      {% endfor %}
-    </div>
-  {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
 
-	<div class="row">
-		<div class="col-12">
-			<form method="POST" novalidate>
-				{% csrf_token %}
-				{% for field in form.visible_fields %}
+<div class="row">
+    <div class="col-12">
+        <form method="POST" novalidate id="number-form">
+            {% csrf_token %}
+            {% for field in form.visible_fields %}
                 <div class="row">
-					<div class="col-4 form-label"><label for="{{field.auto_id}}">{{field.label}}</label></div>
-					<div class="col-4 form-field">{{ field }}</div>
-                    <div class="col-4 form-error" id="error-{{field.auto_id}}">{{ field.errors }}</div>
+                    <div class="col-4 form-label">
+                        <label for="{{field.auto_id}}">{{field.label}}</label>
+                    </div>
+                    <div class="col-4 form-field">
+                        {{ field }}
+                    </div>
+                    <div class="col-4 form-error" id="error-{{field.auto_id}}">
+                        {{ field.errors }}
+                    </div>
                 </div>
-				{% endfor %}
-				<div class="col-3"> </div>
-				<div class="col-9"><button type="submit">Submit</button></div>
-			</form>
-		</div>
-	</div>
+            {% endfor %}
+            
+            <!-- Container for dynamic fields -->
+            <div id="dynamic-fields-container">
+                <!-- Dynamic fields will be inserted here -->
+            </div>
+            
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-9">
+                    <button type="submit">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 <script src="{% static 'js/numberform.js' %}"></script>
+<script>
+	function removeUserDataFieldsWithParents() {
+  // Get all elements in the DOM
+  const allElements = document.querySelectorAll('*');
+  
+  // Keep track of elements already removed to avoid processing them multiple times
+  const removedElements = new Set();
+  
+  // Filter elements that have IDs starting with the specified prefixes
+  for (const element of allElements) {
+    // Skip if this element has already been removed
+    if (removedElements.has(element)) continue;
+    
+    const elementId = element.id;
+    
+    // Check if element has an ID and if it starts with either prefix
+    if (elementId && (
+        elementId.startsWith('id_user_data') || 
+        elementId.startsWith('error-id_user_data')
+    )) {
+      // Get the parent chain (up to 2 levels if they exist and are divs)
+      let currentElement = element;
+      let parentChain = [currentElement];
+      
+      // Add up to 2 parent divs to the chain
+      for (let i = 0; i < 2; i++) {
+        const parent = currentElement.parentElement;
+        if (parent && parent.tagName.toLowerCase() === 'div') {
+          parentChain.push(parent);
+          currentElement = parent;
+        } else {
+          break; // Stop if we encounter a non-div parent or no parent
+        }
+      }
+      
+      // Remove the topmost parent (which removes all children)
+      const topmostParent = parentChain[parentChain.length - 1];
+      if (topmostParent.parentNode) {
+        topmostParent.parentNode.removeChild(topmostParent);
+        
+        // Add all removed elements to our tracking set
+        parentChain.forEach(el => removedElements.add(el));
+      }
+    }
+  }
+  
+  console.log('All user data fields and their parent divs have been removed');
+}
 
+// Add JavaScript to handle dynamic field loading
+document.addEventListener('DOMContentLoaded', function() {
+    const typeofserviceField = document.querySelector('#id_typeofservice');
+    const dynamicContainer = document.querySelector('#dynamic-fields-container');
+    
+    if (typeofserviceField) {
+        // Clear any existing dynamic fields first
+        dynamicContainer.innerHTML = '';
+		removeUserDataFieldsWithParents();
+		
+        
+        // Check if this is a form resubmission (has POST data/errors)
+        const hasFormErrors = document.querySelector('#form_errors') || document.querySelector('.alert-danger');
+        
+        // Load initial fields if typeofservice is already selected
+        if (typeofserviceField.value) {
+            loadDynamicFields(typeofserviceField.value, hasFormErrors);
+        }
+        
+        // Load dynamic fields when typeofservice changes
+        typeofserviceField.addEventListener('change', function() {
+            loadDynamicFields(this.value, false);
+        });
+    }
+    
+    function loadDynamicFields(typeofserviceId, preserveValues = false) {
+        if (!typeofserviceId) {
+            dynamicContainer.innerHTML = '';
+            return;
+        }
+        
+        console.log('Loading dynamic fields for typeofservice:', typeofserviceId);
+        
+        // Store existing values if preserving (for form resubmission)
+        let existingValues = {};
+        if (preserveValues) {
+            const existingFields = dynamicContainer.querySelectorAll('[name^="user_data_"]');
+            existingFields.forEach(field => {
+                if (field.type === 'checkbox') {
+                    existingValues[field.name] = field.checked;
+                } else {
+                    existingValues[field.name] = field.value;
+                }
+            });
+        }
+        
+        fetch(`/number/get-typeofservice-schema/?typeofservice_id=${encodeURIComponent(typeofserviceId)}`)
+            .then(response => {
+				dynamicContainer.innerHTML = '';
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received data:', data);
+                console.log('Schema value:', data.schema);
+                console.log('Schema type:', typeof data.schema);
+                
+                if (data.error) {
+                    console.error('Server error:', data.error);
+                }
+                
+                if (data.schema) {
+                    try {
+                        let parsedSchema;
+                        
+                        // Handle both string and already-parsed object
+                        if (typeof data.schema === 'string') {
+                            if (data.schema === '{}') {
+                                parsedSchema = {};
+                            } else {
+                                parsedSchema = JSON.parse(data.schema);
+                            }
+                        } else if (typeof data.schema === 'object') {
+                            parsedSchema = data.schema;
+                        } else {
+                            throw new Error('Unexpected schema type');
+                        }
+                        
+                        console.log('Parsed schema:', parsedSchema);
+                        
+                        // Only render if there are actual fields
+                        if (Object.keys(parsedSchema).length > 0) {
+                            renderDynamicFields(parsedSchema, existingValues);
+                        } else {
+                            dynamicContainer.innerHTML = '';
+                        }
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        console.error('Raw schema data:', JSON.stringify(data.schema));
+                        dynamicContainer.innerHTML = '';
+                    }
+                } else {
+                    console.log('No schema');
+                    dynamicContainer.innerHTML = '';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading dynamic fields:', error);
+                dynamicContainer.innerHTML = '';
+            });
+    }
+    
+    function renderDynamicFields(schema, existingValues = {}) {
+        dynamicContainer.innerHTML = '';
+        
+        for (const [fieldName, fieldConfig] of Object.entries(schema)) {
+            const row = document.createElement('div');
+            row.className = 'row mb-3';
+            
+            const label = fieldConfig.label || fieldName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            const required = fieldConfig.required || false;
+            const fieldId = `id_user_data_${fieldName}`;
+            const fieldNameAttr = `user_data_${fieldName}`;
+            
+            let fieldHtml = '';
+            let currentValue = existingValues[fieldNameAttr] || '';
+            
+            switch (fieldConfig.type) {
+                case 'bool':
+                    const checked = currentValue === true || currentValue === 'on' ? 'checked' : '';
+                    fieldHtml = `<input type="checkbox" name="${fieldNameAttr}" id="${fieldId}" ${checked}>`;
+                    break;
+                case 'int':
+                    fieldHtml = `<input type="number" name="${fieldNameAttr}" id="${fieldId}" value="${currentValue}" ${required ? 'required' : ''}>`;
+                    break;
+                case 'choice':
+                    const options = fieldConfig.choices.map(choice => {
+                        const selected = choice === currentValue ? 'selected' : '';
+                        return `<option value="${choice}" ${selected}>${choice}</option>`;
+                    }).join('');
+                    fieldHtml = `<select name="${fieldNameAttr}" id="${fieldId}" ${required ? 'required' : ''}>
+                        <option value="">---------</option>
+                        ${options}
+                    </select>`;
+                    break;
+                default: // str
+                    fieldHtml = `<input type="text" name="${fieldNameAttr}" id="${fieldId}" value="${currentValue}" ${required ? 'required' : ''} maxlength="${fieldConfig.max_length || 255}">`;
+            }
+            
+            row.innerHTML = `
+                <div class="col-4 form-label">
+                    <label for="${fieldId}">${label}${required ? ' *' : ''}</label>
+                </div>
+                <div class="col-4 form-field">
+                    ${fieldHtml}
+                </div>
+                <div class="col-4 form-error" id="error-${fieldId}">
+                    <!-- Field errors will appear here -->
+                </div>
+            `;
+            
+            dynamicContainer.appendChild(row);
+        }
+    }
+});
+</script>
 {% endblock %}
