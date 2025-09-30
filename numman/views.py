@@ -156,6 +156,9 @@ def edit_number(request, id):
         context = {
             'form': form,
             'number': number,
+            'tosdata': getTOSData(),
+            'ranges': getRanges(), 
+            'userdata': {"username": request.user.username},
             'description': 'Edit your number configuration',
             'id': number.value,
         }
@@ -176,6 +179,9 @@ def edit_number(request, id):
             context = {
                 'form': form,
                 'number': number,
+                'tosdata': getTOSData(),
+                'ranges': getRanges(), 
+                'userdata': {"username": request.user.username},
                 'description': 'Edit your number configuration',
                 'id': number.value,
             }

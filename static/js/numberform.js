@@ -1274,6 +1274,7 @@ const WORDLIST = [
   }
   return password
 }
+
 const activationCode = genActivationCode()
 const password = genPassword(4)
 
@@ -1361,7 +1362,6 @@ function hideField(param){
     param.target.type = "password"
 }
 
-
 function validateNumber(input){
     let n = ""
 	input.split("").forEach(char => {
@@ -1430,12 +1430,10 @@ document.getElementById('id_typeofservice').addEventListener(
     'change',
     function() { toggleTOS(this.value); },
     false
- );
+);
+
 document.getElementById('id_param').style.display = 'none'
 let tosvalue = document.getElementById('id_typeofservice').value
-if  (tosvalue != ""){
-    toggleTOS(tosvalue)
-}
 
 document.getElementById('id_value').addEventListener(
     'focusout',

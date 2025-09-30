@@ -34,6 +34,7 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
                 self.fields['value'].widget = forms.HiddenInput()
                 self.fields['label'].widget = forms.HiddenInput()
                 self.fields['directory'].widget = forms.HiddenInput()
+                self.fields['param'].widget = forms.HiddenInput()
 
         def full_clean(self):
             """Override full_clean to restore disabled fields before validation"""
