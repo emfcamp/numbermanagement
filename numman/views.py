@@ -1,6 +1,6 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
-from .forms import CreateNumberForm, EditNumberForm, DeleteNumberForm
+from .forms import create_number_form_class, DeleteNumberForm
 from django.contrib.auth.models import User
 from .models import  Event, Number, TypeOfService, Range, Reservation
 from django.contrib.auth.decorators import login_required
@@ -12,6 +12,8 @@ import os.path
 from django.utils import timezone
 from datetime import timedelta
 from django.http import JsonResponse
+from django.shortcuts import render, redirect
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
@@ -39,7 +41,6 @@ def phonebook(request):
 def about(request):
     context = {'title': "Numberwang"}
     return render(request, 'numman/numberwang.html', context)
-
 
 def getTOSData(priv=False):
     if priv:
@@ -70,73 +71,12 @@ def publish(action, number, tos):
     r = requests.post(url, headers=headers, data=data)
     print(r.text)
 
-    
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from django.http import JsonResponse
-
-@login_required
-def create_number(request):
-    if request.method == 'GET':
-        first_event = Event.objects.filter(active=True)[0]
-        form = CreateNumberForm(initial={'event': first_event})
-        context = {
-            'form': form, 
-            'tosdata': getTOSData(), 
-            'ranges': getRanges(), 
-            'userdata': {"username": request.user.username}, 
-            'title': "Create new Number"
-        }
-        return render(request, 'numman/create_number.html', context)
-    
-    elif request.method == 'POST':
-        form = CreateNumberForm(request.POST)
-        form.instance.user = request.user
-        
-        if form.is_valid():
-            # Get user data and store it as JSON
-            user_data_json = form.get_user_data()
-            if user_data_json:
-                form.instance.user_data = user_data_json
-            form.save()
-            # Your existing logic for Group creation
-            tosGroupObj = TypeOfService.objects.get(name='Group')
-            if form.cleaned_data['typeofservice'] == tosGroupObj:
-                n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
-                Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
-            publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
-            messages.success(request, 'The number has been created successfully.')
-            return redirect('/number')
-        else:
-            context = {
-                'form': form,
-                'errors': True,
-                'tosdata': getTOSData(), 
-                'ranges': getRanges(), 
-                'userdata': {"username": request.user.username}, 
-                'title': "Create new Number"
-            }
-            return render(request, 'numman/create_number.html', context)
-
-# Add this new view to handle AJAX requests for dynamic fields
-@login_required
-def get_typeofservice_schema(request):
-    """Return the user_data_schema for a given typeofservice"""
-    if request.method == 'GET' and 'typeofservice_id' in request.GET:
-        try:
-            typeofservice_name = request.GET['typeofservice_id']
-            
-            # Since name is the primary key, query by name
-            typeofservice = TypeOfService.objects.get(name=typeofservice_name)
-            schema = typeofservice.user_data_schema if typeofservice.user_data_schema else '{}'
-            return JsonResponse({'schema': schema})
-        except TypeOfService.DoesNotExist:
-            return JsonResponse({'schema': '{}'})
-        except Exception as e:
-            return JsonResponse({'error': f'Error retrieving schema: {str(e)}'})
-    return JsonResponse({'error': 'Invalid request'})
+def available_numbers(request, name):
+    event = Event.objects.filter(name=name).first()
+    takennumbers =  Number.objects.values('value').filter(event=event)
+    numberlist = [o['value'] for o in list(takennumbers)]
+    context = {'takennumbers': numberlist, 'rangedata': getRanges(), 'title': "Available Numbers"}
+    return render(request, 'numman/availible_numbers.html', context)
 
 @login_required
 def my_numbers(request):
@@ -144,26 +84,102 @@ def my_numbers(request):
     context = {'numbers': numbers, 'title': "My Numbers"}
     return render(request, 'numman/mynumbers.html', context)
 
+@login_required
+def create_number(request):
+    if request.method == 'GET':
+        tos = request.GET.get('typeofservice') or None
+        # Initial form load - no typeofservice selected yet
+        if tos==None:
+            FormClass = create_number_form_class()
+        else:
+            typeofservice = TypeOfService.objects.get(name=tos)
+            FormClass = create_number_form_class(typeofservice)
+        first_event = Event.objects.filter(active=True)[0]
+        form = FormClass(initial={'event': first_event})
+        context = {
+            'form': form, 
+            'tosdata': getTOSData(), 
+            'ranges': getRanges(), 
+            'userdata': {"username": request.user.username}, 
+            'title': "Create new Number"
+        }
+
+        return render(request, 'numman/create_number.html', context)
+    
+    elif request.method == 'POST':
+        tos = request.GET.get('typeofservice') or None
+        # Initial form load - no typeofservice selected yet
+        if tos==None:
+            FormClass = create_number_form_class()
+        else:
+            typeofservice = TypeOfService.objects.get(name=tos)
+            FormClass = create_number_form_class(typeofservice)
+        # Normal form submission
+        form = FormClass(request.POST)
+        form.instance.user = request.user
+        
+        if form.is_valid():
+            # Get user data and store it as JSON
+            user_data_json = form.get_user_data()
+            if user_data_json:
+                form.instance.user_data = user_data_json
+            
+            form.save()
+            
+            # Your existing logic for Group creation
+            tosGroupObj = TypeOfService.objects.get(name='Group')
+            if form.cleaned_data['typeofservice'] == tosGroupObj:
+                n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
+                Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
+            
+            publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
+            messages.success(request, 'The number has been created successfully.')
+            return redirect('/number')
+        else:
+            context = {
+                'form': form,
+                'tosdata': getTOSData(),
+                'ranges': getRanges(),
+                'userdata': {"username": request.user.username},
+                'title': "Create new Number"
+            }
+            return render(request, 'numman/create_number.html', context)
 
 @login_required
 def edit_number(request, id):
-    number = Number.objects.filter(user=request.user).filter(id=id).first()
-    if number == None:
-        raise Http404
-    else:
-        if request.method == 'GET':
-            context = {'form': EditNumberForm(instance=number), 'id': id, 'number' : number, 'title': "Edit "+str(number.value)}
-            return render(request,'numman/edit_number.html',context)
-        elif request.method == 'POST':
-            form = EditNumberForm(request.POST, instance=number)
-            if form.is_valid():
-                form.save()
-                publish('removecache', id, number.typeofservice )
-                messages.success(request, 'The number has been updated successfully.')
-                return redirect('/number')
-            else:
-                messages.error(request, 'Please correct the following errors:')
-                return render(request,'numman/edit_number.html',{'form':form, 'id': id, 'title': "Edit "+str(number.value)})
+    number = get_object_or_404(Number, id=id, user=request.user)
+    if request.method == 'GET':
+        tos = number.typeofservice or request.GET.get('typeofservice') or None
+        FormClass = create_number_form_class(tos, number, True)
+        form = FormClass(instance=number)
+        
+        context = {
+            'form': form,
+            'number': number,
+            'description': 'Edit your number configuration',
+            'id': number.value,
+        }
+        return render(request, 'numman/edit_number.html', context)
+    
+    elif request.method == 'POST':
+        FormClass = create_number_form_class(number.typeofservice, number, True)
+        form = FormClass(request.POST, instance=number)
+        if form.is_valid():
+            # Get user data and store it as JSON
+            user_data_json = form.get_user_data()
+            if user_data_json:
+                form.instance.user_data = user_data_json
+            form.save()
+            messages.success(request, 'The number has been updated successfully.')
+            return redirect('/number')
+        else:
+            context = {
+                'form': form,
+                'number': number,
+                'description': 'Edit your number configuration',
+                'id': number.value,
+            }
+            return render(request, 'numman/edit_number.html', context)
 
 @login_required
 def delete_number(request, id):
@@ -209,9 +225,3 @@ def number_info(request, id):
     context = {'number': number, 'title': 'Settings for '+str(number.value), 'instructions' : instructions}
     return render(request, 'numman/numberinfo.html', context)
 
-def available_numbers(request, name):
-    event = Event.objects.filter(name=name).first()
-    takennumbers =  Number.objects.values('value').filter(event=event)
-    numberlist = [o['value'] for o in list(takennumbers)]
-    context = {'takennumbers': numberlist, 'rangedata': getRanges(), 'title': "Available Numbers"}
-    return render(request, 'numman/availible_numbers.html', context)

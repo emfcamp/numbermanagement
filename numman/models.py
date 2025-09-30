@@ -51,7 +51,6 @@ class Number(models.Model):
     param = models.CharField(max_length=32)
     permissions = models.ManyToManyField(Permission)
     barred = models.BooleanField(default=False, choices=((True, 'Yes'), (False, 'No')))
-    fwd_number = models.CharField(blank=True, max_length=16)
     user_data = models.JSONField(null=True, blank=True, help_text="Additional user data as JSON")
 
     def __str__(self):

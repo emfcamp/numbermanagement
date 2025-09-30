@@ -11,7 +11,6 @@ urlpatterns = [
     path('number/delete/<int:id>/', views.delete_number, name='number-delete'),
     path('number/info/<int:id>/', views.number_info, name='number-info'),
     path('number/available/<str:name>', views.available_numbers, name='available'),
-    path('number/get-typeofservice-schema/', views.get_typeofservice_schema, name='get_typeofservice_schema'),
     path('about', views.about, name='about'),
 
 ]

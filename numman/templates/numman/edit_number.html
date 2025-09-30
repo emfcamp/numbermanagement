@@ -35,8 +35,6 @@
 					<div class="col-9 form-field">{{ field }}</div>
 				{% endfor %}
                 <div class="col-3 form-label"></div>
-				<div class="col-9 form-field">Fallback number will be called if the call to {{ id }} fails, is busy, or is not answered.</div>
-
 				{% for hidden in form.hidden_fields %}
 					{{ hidden }}
 				{% endfor %}

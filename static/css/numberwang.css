@@ -199,3 +199,39 @@ div.alert { margin:1rem;
         }
 div.alert .title{ font-weight: bold; }
 
+/* Style disabled inputs to look like regular text */
+input:disabled,
+textarea:disabled,
+select:disabled {
+  /* Remove input styling */
+  border: none;
+  background: transparent;
+  padding: 0;
+  
+  /* Make it look like regular text */
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  
+  /* Remove any default disabled styling */
+  opacity: 1;
+  -webkit-text-fill-color: currentColor;
+  
+  /* Remove cursor pointer */
+  cursor: text;
+}
+
+/* Optional: Remove any focus outline */
+input:disabled:focus,
+textarea:disabled:focus,
+select:disabled:focus {
+  outline: none;
+}
+
+/* For select dropdowns specifically */
+select:disabled {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}

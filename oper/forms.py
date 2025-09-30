@@ -77,7 +77,7 @@ class EditNumberForm(forms.ModelForm):
 
     class Meta:
         model = Number
-        fields = ['label', 'directory', 'user', 'permissions', 'barred', 'fwd_number']
+        fields = ['label', 'directory', 'user', 'permissions', 'barred']
 
 
 class DeleteNumberForm(forms.Form):
