@@ -1426,17 +1426,36 @@ const alphaLookup = {
     "y" : "9",
     "z" : "9"
 }
-document.getElementById('id_typeofservice').addEventListener(
-    'change',
-    function() { toggleTOS(this.value); },
-    false
-);
 
-document.getElementById('id_param').style.display = 'none'
+//document.getElementById('id_typeofservice').addEventListener(
+//    'change',
+//    function() { toggleTOS(this.value); },
+//    false
+//);
+
 let tosvalue = document.getElementById('id_typeofservice').value
+if (tosvalue.length == 0){
+    document.getElementById('id_param').style.display = 'none'
+} else {
+    toggleTOS(tosvalue);
+}
 
 document.getElementById('id_value').addEventListener(
     'focusout',
     function() { validateNumber(this.value); },
     false
  );
+
+document.addEventListener('DOMContentLoaded', function() {
+    const typeofserviceField = document.querySelector('#id_typeofservice');
+    const form = document.querySelector('#edit-form');
+    if (typeofserviceField && form) {
+        let initialValue = typeofserviceField.value;
+        typeofserviceField.addEventListener('change', function() {
+            if (this.value !== initialValue && this.value !== '') {
+                window.location.href = window.location.pathname + '?typeofservice=' + this.value;
+            }
+        });
+        initialValue = typeofserviceField.value;
+    }
+});

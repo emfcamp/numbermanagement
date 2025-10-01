@@ -103,9 +103,7 @@ def create_number(request):
             'userdata': {"username": request.user.username}, 
             'title': "Create new Number"
         }
-
         return render(request, 'numman/create_number.html', context)
-    
     elif request.method == 'POST':
         tos = request.GET.get('typeofservice') or None
         # Initial form load - no typeofservice selected yet
@@ -117,21 +115,17 @@ def create_number(request):
         # Normal form submission
         form = FormClass(request.POST)
         form.instance.user = request.user
-        
         if form.is_valid():
             # Get user data and store it as JSON
             user_data_json = form.get_user_data()
             if user_data_json:
                 form.instance.user_data = user_data_json
-            
             form.save()
-            
             # Your existing logic for Group creation
             tosGroupObj = TypeOfService.objects.get(name='Group')
             if form.cleaned_data['typeofservice'] == tosGroupObj:
                 n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
                 Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
-            
             publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
             messages.success(request, 'The number has been created successfully.')
             return redirect('/number')

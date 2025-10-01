@@ -63,24 +63,7 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const typeofserviceField = document.querySelector('#id_typeofservice');
-    const form = document.querySelector('#edit-form');
-    
-    if (typeofserviceField && form) {
-        let initialValue = typeofserviceField.value;
-        
-        typeofserviceField.addEventListener('change', function() {
-            if (this.value !== initialValue && this.value !== '') {
-                window.location.href = window.location.pathname + '?typeofservice=' + this.value;
-            }
-        });
-        
-        initialValue = typeofserviceField.value;
-    }
-});
-</script>
+
 <script src="{% static 'js/numberform.js' %}"></script>
 
 {% endblock content_formatted %}
