@@ -89,18 +89,26 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
                     cd['value'] = self.instance.value
                 if 'param' not in cd and hasattr(self.instance, 'param'):
                     cd['param'] = self.instance.param
-            
             number = int(cd.get("value"))
             user = getattr(self.instance, 'user', None)
-            ranges = Range.objects.filter(privileged=False)
-            active_reservation = Reservation.objects.filter(
-                value=number
-            ).filter(
-                Q(expiry__isnull=True) | Q(expiry__gt=timezone.now())
-            ).exclude(user=user).first()
-            if active_reservation:
-                raise ValidationError("Sorry this number is reserved by another user")
+            # Only check for reservations if ignore_reservation is False
+            if not ignore_reservation:
+                active_reservation = Reservation.objects.filter(
+                    value=number
+                ).filter(
+                    Q(expiry__isnull=True) | Q(expiry__gt=timezone.now())
+                ).exclude(user=user).select_related('user').first()
+                if active_reservation:
+                    username = active_reservation.user.username
+                    if active_reservation.expiry:
+                        expiry_str = active_reservation.expiry.strftime('%Y-%m-%d %H:%M')
+                        error_msg = f"Sorry, this number is reserved for {username} until {expiry_str} UTC"
+                    else:
+                        error_msg = f"Sorry, this number is permanently reserved for {username}"
+                    raise ValidationError(error_msg)
+            # Range Validation
             valid = False
+            ranges = Range.objects.filter(privileged=False)
             for r in ranges:
                 if r.start <= number <= r.end:
                     valid = True

@@ -114,27 +114,6 @@ def create_number(request):
             }
             return render(request, 'oper/create_number.html', context)
 
-@login_required
-@operator_required
-def old_create_number(request):
-    if request.method == 'GET':
-        first_event = Event.objects.filter(active=True)[0]
-        form = CreateNumberForm(initial={'event': first_event})
-        context = {'form': form, 'tosdata': getTOSData(), 'ranges': getRanges(), 'userdata' : {"username": request.user.username}, 'title': "Create a Number for User"}
-        return render(request, 'oper/create_number.html', context)
-    elif request.method == 'POST':
-        form = CreateNumberForm(request.POST)
-        form.instance.user  = request.user
-        if form.is_valid():
-            form.save()
-            tosGroupObj = TypeOfService.objects.get(name='Group')
-            if form.cleaned_data['typeofservice'] == tosGroupObj:
-                n = Number.objects.get(value=form.cleaned_data['value'], event=form.cleaned_data['event'])
-                Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
-            publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
-            return redirect('/operator/number')
-        else:
-            return render(request, 'oper/create_number.html', {'form': form, 'tosdata': getTOSData() })
 
 @login_required
 @operator_required
@@ -142,7 +121,6 @@ def my_numbers(request):
     numbers = Number.objects.filter().order_by('event', 'value')
     context = {'numbers': numbers, 'title': "Manage all Numbers"}
     return render(request, 'oper/mynumbers.html', context)
-
 
 @login_required
 @operator_required
@@ -195,7 +173,6 @@ def delete_number(request, id):
             else:
                 messages.error(request, 'Invalid Form')
         return redirect('/operator/number')
-    
 
 @login_required
 @operator_required
