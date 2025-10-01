@@ -1,33 +1,60 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
-<h2>Edit {{ id }}</h2>
-    {% if form.non_field_errors %}
-    <div class="alert alert-danger" role="alert">
-      {% for error in form.non_field_errors %}
-        {{ error }}
-      {% endfor %}
-    </div>
-  {% endif %}
+{%block content_formatted%}
+{{ tosdata|json_script:"tosdata" }}
+{{ ranges|json_script:"ranges" }}
+{{ userdata|json_script:"userdata"}}
+
+	<div class="row">
+		<div class="col-12">
+    <h2> Edit {{number.value}} <span id="eventsub">{{number.event}}</span></h2>
+			<p>{{description |safe}}</p>
+		</div>
+	</div>
+
+	{% if form.errors %}
+		<div class="row">
+			<div class="col-12">
+				<div role="alert">
+					<div id="form_errors">
+						{% for key, value in form.errors.items %}
+							<strong>{{ value }}</strong>
+						{% endfor %}
+					</div>
+					<button type="button" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+			</div>
+		</div>
+	{% endif %}
 
 	<div class="row">
 		<div class="col-12">
 			<form method="POST" novalidate>
 				{% csrf_token %}
+
 				{% for field in form.visible_fields %}
-                <div class="row">
-					<div class="col-4 form-label"><label for="{{field.auto_id}}">{{field.label}}</label></div>
-					<div class="col-4 form-field">{{ field }}</div>
-                    <div class="col-4 form-error" id="error-{{field.auto_id}}">{{ field.errors }}</div>
-                </div>
+					<div class="col-3 form-label"><label for="{{field.auto_id}}">{{field.label}}</label></div>
+					<div class="col-9 form-field">{{ field }}
+						{% if field.errors %}
+                            <div class="text-danger">{{ field.errors }}</div>
+                        {% endif %}
+					</div>
 				{% endfor %}
-				<div class="col-3"> </div>
+                <div class="col-3 form-label"></div>
+				{% for hidden in form.hidden_fields %}
+					{{ hidden }}
+				{% endfor %}
+				<div class="col-3"></div>
 				<div class="col-9"><button type="submit">Submit</button></div>
+				<a href="/operator/number" class="btn btn-secondary">Cancel</a>
+
 			</form>
 		</div>
 	</div>
 
+	</script>
 <script src="{% static 'js/numberform.js' %}"></script>
-
-{% endblock %}
+{% endblock content_formatted%}

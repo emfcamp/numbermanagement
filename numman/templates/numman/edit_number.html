@@ -37,7 +37,12 @@
 
 				{% for field in form.visible_fields %}
 					<div class="col-3 form-label"><label for="{{field.auto_id}}">{{field.label}}</label></div>
-					<div class="col-9 form-field">{{ field }}</div>
+					<div class="col-9 form-field">
+						{{ field }}
+						{% if field.errors %}
+                            <div class="text-danger">{{ field.errors }}</div>
+                        {% endif %}
+					</div>
 				{% endfor %}
                 <div class="col-3 form-label"></div>
 				{% for hidden in form.hidden_fields %}
@@ -45,6 +50,8 @@
 				{% endfor %}
 				<div class="col-3"></div>
 				<div class="col-9"><button type="submit">Submit</button></div>
+                <a href="/number" class="btn btn-secondary">Cancel</a>
+
 
 			</form>
 		</div>

@@ -12,15 +12,17 @@ from numman.models import Number
 from django.utils import timezone
 from django.utils import timezone
 from datetime import timedelta
+import json
 
 
 def create_number_form_class(typeofservice=None, instance=None, edit=False):
     """Factory function that creates a form class with dynamic fields"""
     class DynamicCreateNumberForm(forms.ModelForm):
-        ignore_reservation = forms.BooleanField(
-        required=False, 
-        label="Override existing reservation",
-        help_text="Check this box to use a number that's reserved by another user"
+        if not edit:
+            ignore_reservation = forms.BooleanField(
+            required=False, 
+            label="Override existing reservation",
+            help_text="Check this box to use a number that's reserved by another user"
     )
         
         def __init__(self, *args, **kwargs):
@@ -33,6 +35,7 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
             self.fields['value'].label = "Number"
             self.fields['label'].label = "Description"
             self.fields['typeofservice'].label = "Type of Service"
+            self.fields['user'].queryset = User.objects.order_by('username')
             if edit:
                 self.fields['event'].disabled = True
                 self.fields['param'].disabled = True
@@ -92,7 +95,7 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
             number = int(cd.get("value"))
             user = getattr(self.instance, 'user', None)
             # Only check for reservations if ignore_reservation is False
-            if not ignore_reservation:
+            if not edit and not ignore_reservation:
                 active_reservation = Reservation.objects.filter(
                     value=number
                 ).filter(

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
 from .forms import CreateNumberForm, EditNumberForm, DeleteNumberForm, BlockUserForm, JoinGroupForm, create_number_form_class
 from django.contrib.auth.models import User
@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 from django.conf import settings
 import requests
 from groups.models import Group, Membership
+from django.http import JsonResponse
 from django.utils import timezone
 
 def getTOSData():
@@ -103,7 +104,7 @@ def create_number(request):
                 Group.objects.create(value=n, event=form.cleaned_data['event'], user=form.instance.user)
             publish('add', form.cleaned_data['value'], form.cleaned_data['typeofservice'])
             messages.success(request, 'The number has been created successfully.')
-            return redirect('/number')
+            return redirect('operator/number')
         else:
             context = {
                 'form': form,
@@ -125,23 +126,45 @@ def my_numbers(request):
 @login_required
 @operator_required
 def edit_number(request, id):
-    number = Number.objects.filter(id=id).first()
-    if number == None:
-        raise Http404
-    else:
-        if request.method == 'GET':
-            context = {'form': EditNumberForm(instance=number), 'id': id, 'title': "Edit "+str(id)}
-            return render(request,'form.html',context)
-        elif request.method == 'POST':
-            form = EditNumberForm(request.POST, instance=number)
-            if form.is_valid():
-                form.save()
-                publish('removecache', id, number.typeofservice )
-                messages.success(request, 'The number has been updated successfully.')
-                return redirect('/operator/number')
-            else:
-                messages.error(request, 'Please correct the following errors:')
-                return render(request,'form',{'form':form, 'id': id, 'title': "Edit "+str(id)})
+    number = get_object_or_404(Number, id=id, user=request.user)
+    if request.method == 'GET':
+        tos = number.typeofservice or request.GET.get('typeofservice') or None
+        FormClass = create_number_form_class(tos, number, True)
+        form = FormClass(instance=number)
+        
+        context = {
+            'form': form,
+            'number': number,
+            'tosdata': getTOSData(),
+            'ranges': getRanges(), 
+            'userdata': {"username": request.user.username},
+            'description': 'Edit your number configuration',
+            'id': number.value,
+        }
+        return render(request, 'oper/edit_number.html', context)
+    
+    elif request.method == 'POST':
+        FormClass = create_number_form_class(number.typeofservice, number, True)
+        form = FormClass(request.POST, instance=number)
+        if form.is_valid():
+            # Get user data and store it as JSON
+            user_data_json = form.get_user_data()
+            if user_data_json:
+                form.instance.user_data = user_data_json
+            form.save()
+            messages.success(request, 'The number has been updated successfully.')
+            return redirect('/operator/number')
+        else:
+            context = {
+                'form': form,
+                'number': number,
+                'tosdata': getTOSData(),
+                'ranges': getRanges(), 
+                'userdata': {"username": request.user.username},
+                'description': 'Edit your number configuration',
+                'id': number.value,
+            }
+            return render(request, 'oper/edit_number.html', context)
 
 @login_required
 @operator_required
