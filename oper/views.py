@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, Http404
-from .forms import CreateNumberForm, EditNumberForm, DeleteNumberForm, BlockUserForm, JoinGroupForm, create_number_form_class
+from .forms import DeleteNumberForm, BlockUserForm, JoinGroupForm, create_number_form_class
 from django.contrib.auth.models import User
 from users.models import Operator
 from numman.models import  Event, Number, TypeOfService, Range, Reservation
@@ -61,7 +61,6 @@ def home(request):
 @login_required
 @operator_required
 def create_number(request):
-    print('CREATE NUMBER')
     if request.method == 'GET':
         tos = request.GET.get('typeofservice') or None
         # Initial form load - no typeofservice selected yet
@@ -126,7 +125,7 @@ def my_numbers(request):
 @login_required
 @operator_required
 def edit_number(request, id):
-    number = get_object_or_404(Number, id=id, user=request.user)
+    number = get_object_or_404(Number, id=id)
     if request.method == 'GET':
         tos = number.typeofservice or request.GET.get('typeofservice') or None
         FormClass = create_number_form_class(tos, number, True)

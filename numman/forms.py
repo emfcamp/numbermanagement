@@ -17,11 +17,13 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
             self.editMode = edit            
             self.fields['event'].queryset = Event.objects.filter(active=True)
             self.fields['typeofservice'].queryset = TypeOfService.objects.filter(privileged=False)
+            self.fields['typeofservice'].label = "Type of Service"
+            self.fields['typeofservice'].help_text = "The type of device or service this number will be using, see the wiki"
             self.fields['param'].label = " "
             self.fields['directory'].label = "Public Phonebook"
+            self.fields['directory'].help_text = "Will the number be listed in the public phonebookt"
             self.fields['value'].label = "Number"
             self.fields['label'].label = "Description"
-            self.fields['typeofservice'].label = "Type of Service"
             if edit:
                 self.fields['event'].disabled = True
                 self.fields['param'].disabled = True

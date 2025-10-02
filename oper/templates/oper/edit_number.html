@@ -39,11 +39,13 @@
 					<div class="col-3 form-label"><label for="{{field.auto_id}}">{{field.label}}</label></div>
 					<div class="col-9 form-field">{{ field }}
 						{% if field.errors %}
-                            <div class="text-danger">{{ field.errors }}</div>
+                            {{ field.errors }}
+						{% else %}
+							{{field.help_text}}
                         {% endif %}
 					</div>
 				{% endfor %}
-                <div class="col-3 form-label"></div>
+                <div class="col-12 form-label"></div>
 				{% for hidden in form.hidden_fields %}
 					{{ hidden }}
 				{% endfor %}
