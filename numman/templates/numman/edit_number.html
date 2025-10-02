@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {%block content_formatted%}
+{{ tosdata|json_script:"tosdata" }}
+{{ ranges|json_script:"ranges" }}
+{{ userdata|json_script:"userdata"}}
+
 	<div class="row">
 		<div class="col-12">
     <h2> Edit {{number.value}} <span id="eventsub">{{number.event}}</span></h2>
@@ -31,19 +36,27 @@
 				{% csrf_token %}
 
 				{% for field in form.visible_fields %}
-					<div class="col-3 form-label">{{ field.label }}</div>
-					<div class="col-9 form-field">{{ field }}</div>
+					<div class="col-3 form-label"><label for="{{field.auto_id}}">{{field.label}}</label></div>
+					<div class="col-9 form-field">
+						{{ field }}
+						{% if field.errors %}
+                            <div class="text-danger">{{ field.errors }}</div>
+                        {% endif %}
+					</div>
 				{% endfor %}
                 <div class="col-3 form-label"></div>
-				<div class="col-9 form-field">Fallback number will be called if the call to {{ id }} fails, is busy, or is not answered.</div>
-
 				{% for hidden in form.hidden_fields %}
 					{{ hidden }}
 				{% endfor %}
 				<div class="col-3"></div>
 				<div class="col-9"><button type="submit">Submit</button></div>
+                <a href="/number" class="btn btn-secondary">Cancel</a>
+
 
 			</form>
 		</div>
 	</div>
+
+	</script>
+<script src="{% static 'js/numberform.js' %}"></script>
 {% endblock content_formatted%}

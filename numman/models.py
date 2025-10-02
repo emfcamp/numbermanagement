@@ -21,7 +21,8 @@ class TypeOfService(models.Model):
     param_length = models.SmallIntegerField()
     param_name = models.CharField(max_length=32)
     group_capable = models.BooleanField(default=False)
-
+    user_data_schema = models.JSONField(null=True, blank=True)
+    
     def __str__(self):
         return self.name
 
@@ -50,7 +51,7 @@ class Number(models.Model):
     param = models.CharField(max_length=32)
     permissions = models.ManyToManyField(Permission)
     barred = models.BooleanField(default=False, choices=((True, 'Yes'), (False, 'No')))
-    fwd_number = models.CharField(blank=True, max_length=16)
+    user_data = models.JSONField(null=True, blank=True, help_text="Additional user data as JSON")
 
     def __str__(self):
         return self.value
