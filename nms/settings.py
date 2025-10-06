@@ -32,7 +32,7 @@ SECRET_KEY = 'django-insecure-^@#n!-t)tzwaq2sk)!(7h1!7xxe8fqcin44!wnfi=u7=-td14s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["localhost", "192.168.1.10", "127.0.0.1", ".ngrok-free.app"]
+ALLOWED_HOSTS = ["localhost", "192.168.1.10", "127.0.0.1", ".ngrok-free.app", "tunnel.sammachin.com"]
 
 LOGIN_URL = 'login'
 
@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'verify_email.apps.VerifyEmailConfig',
     'groups.apps.GroupsConfig',
+    'audio_manager.apps.AudioConfig'
 ]
 
 MIDDLEWARE = [
@@ -133,6 +134,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+# Media files configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

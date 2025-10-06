@@ -93,7 +93,7 @@ def create_number(request):
             FormClass = create_number_form_class()
         else:
             typeofservice = TypeOfService.objects.get(name=tos)
-            FormClass = create_number_form_class(typeofservice)
+            FormClass = create_number_form_class(typeofservice, user=request.user)
         first_event = Event.objects.filter(active=True)[0]
         form = FormClass(initial={'event': first_event})
         context = {
@@ -111,7 +111,7 @@ def create_number(request):
             FormClass = create_number_form_class()
         else:
             typeofservice = TypeOfService.objects.get(name=tos)
-            FormClass = create_number_form_class(typeofservice)
+            FormClass = create_number_form_class(typeofservice, user=request.user)
         # Normal form submission
         form = FormClass(request.POST)
         form.instance.user = request.user
@@ -144,7 +144,7 @@ def edit_number(request, id):
     number = get_object_or_404(Number, id=id, user=request.user)
     if request.method == 'GET':
         tos = number.typeofservice or request.GET.get('typeofservice') or None
-        FormClass = create_number_form_class(tos, number, True)
+        FormClass = create_number_form_class(tos, number, True, user=request.user)
         form = FormClass(instance=number)
         
         context = {
@@ -159,8 +159,8 @@ def edit_number(request, id):
         return render(request, 'numman/edit_number.html', context)
     
     elif request.method == 'POST':
-        FormClass = create_number_form_class(number.typeofservice, number, True)
-        form = FormClass(request.POST, instance=number)
+        FormClass = create_number_form_class(number.typeofservice, number, True, user=request.user)
+        form = FormClass(request.POST, instance=number, )
         if form.is_valid():
             # Get user data and store it as JSON
             user_data_json = form.get_user_data()

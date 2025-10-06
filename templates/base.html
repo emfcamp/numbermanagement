@@ -36,6 +36,7 @@
                                     | <a href="{% url 'profile' %}">{{ request.user.username | title }}'s Profile</a>
                                     | <a href="/number">My Numbers</a> 
                                     | <a href="/number/create">Add A Number</a>
+                                    | <a href="/audio">Audio Files</a>
                                 {% if request.user.operator.isOperator %}
                                     | <a href="/operator">Operator</a>
                                 {%endif%}

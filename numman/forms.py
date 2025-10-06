@@ -7,9 +7,9 @@ from .models import Number, Event, TypeOfService, Range, Reservation
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 import json
+from audio_manager.models import AudioFile
 
-
-def create_number_form_class(typeofservice=None, instance=None, edit=False):
+def create_number_form_class(typeofservice=None, instance=None, edit=False, user=None):
     """Factory function that creates a form class with dynamic fields"""
     class DynamicCreateNumberForm(forms.ModelForm):
         def __init__(self, *args, **kwargs):
@@ -60,7 +60,6 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
                             self.data['param'] = str(self.instance.param)
                         if hasattr(self.data, '_mutable'):
                             self.data._mutable = False
-            print(self.data)
             # Now run the normal validation
             super().full_clean()
 
@@ -153,6 +152,18 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
                     )
                 elif field_type == 'choice':
                     choices = [('', '---------')] + [(choice, choice) for choice in field_config.get('choices', [])]
+                    field = forms.ChoiceField(
+                        choices=choices,
+                        required=required,
+                        label=label,
+                        initial=initial_value
+                    )
+                elif field_type == 'media':
+                    if user:
+                        audio_files = AudioFile.objects.filter(user=user)
+                        choices = [('', '---------')] + [(str(audio.file), audio.title) for audio in audio_files]
+                    else:
+                        choices = [('', '---------')]
                     field = forms.ChoiceField(
                         choices=choices,
                         required=required,
