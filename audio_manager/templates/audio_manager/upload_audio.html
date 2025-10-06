@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Upload Audio File</h2>
+    <br>
+    <br>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <br>
+        <button type="submit" class="btn btn-primary">Upload</button>
+        <a href="{% url 'audio_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+    
+    <small class="text-muted d-block mt-2">Maximum file size: 5MB. Supported formats: MP3, WAV</small>
+</div>
+{% endblock %}

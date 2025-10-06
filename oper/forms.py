@@ -1,6 +1,7 @@
 from typing import Any, Mapping
 from django.core.files.base import File
 from django.db.models.base import Model, Q
+from django.db.models.functions import Lower
 from django import forms
 from django.forms.utils import ErrorList
 from numman.models import Number, Event, TypeOfService, Range, Reservation
@@ -13,9 +14,10 @@ from django.utils import timezone
 from django.utils import timezone
 from datetime import timedelta
 import json
+from audio_manager.models import AudioFile
 
 
-def create_number_form_class(typeofservice=None, instance=None, edit=False):
+def create_number_form_class(typeofservice=None, instance=None, edit=False, user=None):
     """Factory function that creates a form class with dynamic fields"""
     class DynamicCreateNumberForm(forms.ModelForm):
         if not edit:
@@ -31,7 +33,6 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
             self.fields['event'].queryset = Event.objects.filter(active=True)
             self.fields['typeofservice'].queryset = TypeOfService.objects.filter(privileged=False)
             self.fields['param'].label = " "
-            self.fields['param'].help_text = "Test"
             self.fields['directory'].label = "Public Phonebook"
             self.fields['value'].label = "Number"
             self.fields['label'].label = "Description"
@@ -176,6 +177,18 @@ def create_number_form_class(typeofservice=None, instance=None, edit=False):
                     )
                 elif field_type == 'choice':
                     choices = [('', '---------')] + [(choice, choice) for choice in field_config.get('choices', [])]
+                    field = forms.ChoiceField(
+                        choices=choices,
+                        required=required,
+                        label=label,
+                        initial=initial_value
+                    )
+                elif field_type == 'media':
+                    audio_files = AudioFile.objects.select_related('user').order_by(Lower('user__username'))
+                    choices = [('', '---------')]
+                    for audio in audio_files:
+                        l = str(audio.user) + "-" + str(audio.title)
+                        choices = choices + [(audio.file, l)]
                     field = forms.ChoiceField(
                         choices=choices,
                         required=required,

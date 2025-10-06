@@ -55,6 +55,9 @@ def list_numbers(request, event, tos):
         raise PermissionDenied()
     tosname = scope[0]['name']
     numbers = Number.objects.filter(typeofservice__name=tosname).filter(event__name=event).values()
+    for item in numbers:
+        if 'user_data' in item and item['user_data']:
+            item['user_data'] = json.loads(item['user_data'])
     return JsonResponse({'numbers':list(numbers)})
 
 
@@ -69,6 +72,8 @@ def get_number(request, event, id):
     try:
         n = Number.objects.filter(value=id).filter(event__name=event).get()
         number=obj_to_dict(n)
+        if 'user_data' in number and number['user_data']:
+            number['user_data'] = json.loads(number['user_data'])
         if number:
             if number['typeofservice'] in [i[0] for i in scope]:
                 return JsonResponse(number, safe=False)

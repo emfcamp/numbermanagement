@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-12">
+    <h2>My Audio Files</h2>
+    
+    <a href="{% url 'upload_audio' %}" class="btn btn-primary mb-3">Upload New Audio</a>
+    <br><br>
+
+    {% if audio_files %}
+        <table id="audiofiles" class="phonebook">
+            <tr>
+                <th>Name</th>
+                <th>Uploaded</th>
+                <th>Playback</th>
+                <th>Manage</th>
+            </tr>
+        
+            {% for audio in audio_files %}
+            <tr>
+                <td>{{ audio.title|default:audio.file.name }}</td>
+                <td>{{ audio.uploaded_at|date:"M d, Y H:i" }}</td>
+                <td>
+                    <audio controls class="d-block mt-2" style="max-width: 50px;">
+                    <source src="{{ audio.file.url }}" type="audio/mpeg">
+                    Audio not supported
+                    </audio>
+                </td>           
+                <td><a href="{% url 'delete_audio' audio.pk %}" class="btn btn-danger btn-sm">Delete</a></td>
+            </tr>
+            {% endfor %}
+            </table>
+  
+    {% else %}
+        <p>No audio files uploaded yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

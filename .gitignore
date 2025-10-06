@@ -174,3 +174,5 @@ bin/sqlformat
 pyvenv.cfg
 db.sqlite3
 /dev
+/audio_files
+/media/audio_files
